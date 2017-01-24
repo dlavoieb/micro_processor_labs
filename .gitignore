@@ -31,3 +31,8 @@
 # Debug files
 *.dSYM/
 *.su
+*.dbgconf
+Lab1_STM32F4Cube_Base_project/Listings/
+Lab1_STM32F4Cube_Base_project/Objects/
+*.scvd
+Lab1_STM32F4Cube_Base_project/Base_Project.uvguix.David Lavoie-Boutin
