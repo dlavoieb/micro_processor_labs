@@ -1,0 +1,7 @@
+	AREA file123, CODE, READONLY
+	EXPORT FIR_asm
+		
+FIR_asm
+	ADD R0, R0, # 0x0
+	
+	END
