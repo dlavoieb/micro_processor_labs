@@ -187,15 +187,17 @@ Reset_Handler    PROC
         IMPORT  SystemInit
         IMPORT  __main
 
- ;                 LDR     R0, =SystemInit
- ;                 BLX     R0
- 
-								 LDR.W  R0, =0xE000ED88
-								 LDR R1, [R0]
-								 ORR R1, R1, #(0xF << 20)
-								 STR R1, [R0]
-								 DSB
-								 ISB
+				; CPACR is located at address 0xE000ED88
+				LDR.W   R0, =0xE000ED88
+				; Read CPACR
+				LDR     R1, [R0]
+				; Set bits 20-23 to enable CP10 and CP11 coprocessors
+				ORR     R1, R1, #(0xF << 20)
+				; Write back the modified value to the CPACR
+				STR     R1, [R0]; wait for store to complete
+				DSB
+				;reset pipeline now the FPU is enabled
+				ISB
 								
                  LDR     R0, =__main
                  BX      R0
