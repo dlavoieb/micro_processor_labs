@@ -6,11 +6,11 @@
 #define COEFFS_LENGTH 5
 #define DATA_LENGTH 1000
 
+static float32_t output[DATA_LENGTH];
+static float32_t data [DATA_LENGTH + COEFFS_LENGTH];
+
 int main()
 {
-	float * data = (float *) malloc((DATA_LENGTH + COEFFS_LENGTH)* sizeof(float32_t));
-	float * output = (float *) malloc(DATA_LENGTH * sizeof(float32_t));
-	
 	// pad data array with 0, note first 0 is never used
 	for (int i = 0; i<COEFFS_LENGTH; i++) {
 		data[i] = 0;
