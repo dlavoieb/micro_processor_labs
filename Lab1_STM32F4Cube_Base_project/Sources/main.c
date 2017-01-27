@@ -6,8 +6,14 @@
 #define COEFFS_LENGTH 5
 #define DATA_LENGTH 1000
 
+//CMSIS Defines
+#define NUM_TAPS 5
+#define BLOCK_SIZE 32 
+
+
 static float32_t output[DATA_LENGTH];
 static float32_t data [DATA_LENGTH + COEFFS_LENGTH];
+static float32_t firStateF32[BLOCK_SIZE + NUM_TAPS - 1];
 
 int main()
 {
@@ -20,9 +26,11 @@ int main()
 		data[i] = i;
 	}
 	float coeffs[COEFFS_LENGTH] = {0.1, 0.15, 0.5, 0.15, 0.1};
-	
-	int data_index = COEFFS_LENGTH;
-	
+
+	//---------------------------
+	//---Custom implementation---
+	//---------------------------
+	int data_index = COEFFS_LENGTH;	
 	while (data_index < COEFFS_LENGTH + DATA_LENGTH) {
 		//build a window
 		//compute average for window
@@ -32,12 +40,55 @@ int main()
 	}
 	
 	// print out the results
+	print_data(data, DATA_LENGTH + COEFFS_LENGTH);
+	print_output(output, DATA_LENGTH);
+	
+	
+	//-----------------------------
+	//---Assembly Implementation---
+	//-----------------------------
+	
+	
+	
+	//--------------------------
+	//---CMSIS Implementation---
+	//--------------------------
+  arm_fir_instance_f32 S;
+  float32_t  *inputF32, *outputF32;
+	uint32_t blockSize = BLOCK_SIZE;
+	uint32_t numBlocks = DATA_LENGTH/BLOCK_SIZE;
+
+  /* Initialize input and output buffer pointers */
+  inputF32 = &data[5];
+  outputF32 = &output[0];
+
+  /* Call FIR init function to initialize the instance structure. */
+  arm_fir_init_f32(&S, NUM_TAPS, (float32_t *)&coeffs[0], &firStateF32[0], blockSize);
+
+  /* ----------------------------------------------------------------------
+  ** Call the FIR process function for every blockSize samples
+  ** ------------------------------------------------------------------- */
+
+  for(int i=0; i < numBlocks; i++) {
+    arm_fir_f32(&S, inputF32 + (i * blockSize), outputF32 + (i * blockSize), blockSize);
+  }
+
+	print_output(outputF32, DATA_LENGTH);
+	
+	while(1);
+}
+
+void print_data(float32_t * data, size_t length) {
 	printf("Data array: \n[");
-	for (int i = 0; i < COEFFS_LENGTH + DATA_LENGTH; i++) {
+	for (int i = 0; i < length; i++) {
 		printf("%f, ", data[i]);
 	}
-	printf("]\nOutput values: \n[");
-	for (int i = 0; i < DATA_LENGTH; i++) {
+	printf("]\n");
+}
+
+void print_output(float32_t* output, size_t length) {
+	printf("Output values: \n[");
+	for (int i = 0; i < length; i++) {
 		printf("%f, ", output[i]);
 	}
 	printf("]\n");
