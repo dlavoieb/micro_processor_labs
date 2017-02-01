@@ -38,24 +38,20 @@ AVERAGE_asm PROC
 	; Input arguments:
 	; 	R0 Pointer to data segment
 	; 	R1 Pointer to coefficient array
-	; 	R2 Pointer to output array
-	;	R3 Length of coefficient array
+    ;   R2 Pointer to output array
 
-	LDR			R12, = 0		; Initialize averaging_loop counter
 	VSUB.F32 	S0, S0, S0		; Initialize total ; TODO: FIX THIS HACK INITIALISATION 
-average_loop
-	CMP			R12, R3 		; Compare loop index to coeffs length
-	BEQ 		average_exit 	; If reached loop end branch out
-	VLDR.F32 	S1, [R0] 		; Load next data element
-	VLDR.F32	S2, [R1]		; Load next coefficient
-	VFMA.F32	S0, S1, S2 		; Multiply data and coeff, then accumulate on total
-	ADD 		R12, R12, #0x1 	; Increment index
-	ADD 		R0, R0, #0x4 	; Shift data pointer to next element
-	ADD 		R1, R1, #0x4 	; Shift data pointer to next element
-	B 			average_loop	; Jump to beginning of loop
-average_exit	
-	VSTR.F32	S0, [R2] 		; Write back floating point result to memory
-	BX 			LR				; Return from function call
+
+    VLDM.F32 	R0, {S1, S2, S3, S4, S5}		; Load next data element
+    VLDM.F32	R1, {S11, S12, S13, S14, S15}  ; Load next coefficient
+	VFMA.F32	S0, S1, S11 		; Multiply data and coeff, then accumulate on total
+	VFMA.F32	S0, S2, S12 		; Multiply data and coeff, then accumulate on total
+	VFMA.F32	S0, S3, S13 		; Multiply data and coeff, then accumulate on total
+	VFMA.F32	S0, S4, S14 		; Multiply data and coeff, then accumulate on total
+	VFMA.F32	S0, S5, S15 		; Multiply data and coeff, then accumulate on total
+    VSTR.F32        S0, [R2]        ; Write back floating point result to memory
+    
+    BX 			LR				; Return from function call
 	ENDP
 		
 	END
