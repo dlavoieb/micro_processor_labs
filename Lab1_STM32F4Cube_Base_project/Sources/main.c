@@ -14,6 +14,7 @@
 static float32_t output[DATA_LENGTH];
 static float32_t data [DATA_LENGTH + COEFFS_LENGTH];
 static float32_t firStateF32[BLOCK_SIZE + NUM_TAPS - 1];
+static float coeffs[COEFFS_LENGTH] = {0.1, 0.15, 0.5, 0.15, 0.1};
 
 int main()
 {
@@ -25,8 +26,7 @@ int main()
 	for (int i = COEFFS_LENGTH; i<DATA_LENGTH + COEFFS_LENGTH; i++) {
 		data[i] = i;
 	}
-	float coeffs[COEFFS_LENGTH] = {0.1, 0.15, 0.5, 0.15, 0.1};
-
+	
 	//---------------------------
 	//---Custom implementation---
 	//---------------------------
@@ -47,8 +47,10 @@ int main()
 	//-----------------------------
 	//---Assembly Implementation---
 	//-----------------------------
-	
-	
+//	FIR_asm();
+	AVERAGE_asm(&data[1], coeffs, &output[1], COEFFS_LENGTH);
+	AVERAGE_asm(&data[3], coeffs, &output[3], COEFFS_LENGTH);
+	AVERAGE_asm(&data[5], coeffs, &output[5], COEFFS_LENGTH);
 	
 	//--------------------------
 	//---CMSIS Implementation---
