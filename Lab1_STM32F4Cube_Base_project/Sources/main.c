@@ -4,10 +4,10 @@
 #include "main.h"
 
 #define COEFFS_LENGTH 5
-#define DATA_LENGTH 20
+#define DATA_LENGTH 2000
 
 //CMSIS Defines
-#define NUM_TAPS 5
+#define NUM_TAPS COEFFS_LENGTH
 #define BLOCK_SIZE 32 
 
 
@@ -50,11 +50,8 @@ int main()
 	//-----------------------------
 //	FIR_asm();
 	FIR_asm(&data[1], coeffs, output_asm, COEFFS_LENGTH, DATA_LENGTH);
-//	printf("ASM implementation: ");
-//	print_output(output_asm, DATA_LENGTH);
-//	int compate = 0;
-//	compate = memcmp(output, output_asm, DATA_LENGTH);
-//	printf("compare result: %d", compate);
+	printf("ASM implementation: ");
+	print_output(output_asm, DATA_LENGTH);
 	
 	//--------------------------
 	//---CMSIS Implementation---
