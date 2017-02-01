@@ -6,12 +6,28 @@ FIR_asm PROC
 	; Input arguments:
 	; 	R0 Pointer to start of data array
 	;	R1 Pointer to coefficient array
-	;	R2 Length of data array
+	; 	R2 Pointer to the output array
 	; 	R3 Length of coefficient array
+	;	R4 Length of data array, same as number of output elements
+	POP		{R4} 						; Get R4 data counter from stack
+	LDR 	R5, = 0 					; R5 is loop counter, to all data elements
+	PUSH	{LR}
+loop
+	CMP 	R4, R5
+	BEQ 	exit
 	
-	ADD 	R0, R0, # 0x0 ; nop
-	LDR     R0, = AVERAGE_asm
-	;BX      R0
+	PUSH	{r0, r1, r2, r3, r4, r5}	; push current pointers and counts to the stack
+	BL 		AVERAGE_asm 				; branch and link to average
+	POP		{r0, r1, r2, r3, r4, r5} 	; on return pop from the stack the values or r0 - r4
+	
+	ADD 	R0, R0, #4					; increment the values of r0 and r2 and r5
+	ADD 	R2, R2, #4
+	ADD 	R5, R5, #1
+
+	B 		loop						; branch to top
+exit
+	POP 	{LR}
+	BX 		LR
 	ENDP
 		
 AVERAGE_asm PROC
@@ -22,60 +38,22 @@ AVERAGE_asm PROC
 	; 	R1 Pointer to coefficient array
 	; 	R2 Pointer to output array
 	;	R3 Length of coefficient array
-	;	R4 Length of the output array
 	
-	; Outer loop: Goes through all the data segments.
-	LDR		R6, = 0		; Initialize the outer loop counter.
-	
-	; Set R10 such that it is 1 less than the number of words in coefficient array
-	; in bytes, hence the multiplication. This will allow us to shift back our data
-	; segment at the end of the inner loop.
-	LDR 	R10, = 4 	; Initialize R10
-	
-	; Multiply the number of bytes per word by the 
-	; length of the coeff array and subtract from 1
-	; to give appropriate shift
-	MLS		R10, R10, R3, = 1	
-
-outer_loop
-	;initialize the counter of the outer loop .. done
-	;set the ammount that we have to shift back by .. done
-
-	;Outer loop
-		;exit if we have exceeded the outer loop counter. 
-
-		;Take the average starting at the position based on the outer loop
-		;counter as an offset.
-		
-		;Set the current output register to the result
-
-		;Increment the address of the output register	
-
-		;Increment the outer loop counter.
-
-		;Set the Data pointer register to the starting value plus offset
-
-		;Reset to coefficient pointer back to the start of the array
-	
-	LDR		R5, = 0		; Initialize averaging_loop counter
-	VSUB.F32 S0, S0, S0	; Initialize total ; TODO: FIX THIS HACK INITIALISATION 
-averaging_loop
-	CMP		R5, R3 		; Compare loop index to coeffs length
-	BEQ 	exit_averaging_loop 		; If reached loop end branch out
-	VLDR.F32 	S1, [R0] 	; Load next data element
-	VLDR.F32	S2, [R1]	; Load next coefficient
-	VFMA.F32	S0, S1, S2 	; Multiply data and coeff, then accumulate on total
-	ADD R5, R5, #0x1 	; Increment index
-	ADD R0, R0, #0x4 	; Shift data pointer to next element
-	ADD R1, R1, #0x4 	; Shift data pointer to next element
-	B 			averaging_loop 		; Jump to beginning of loop
-exit_averaging_loop
-
-
-exit_outer_loop
-	
-	VSTR.F32	S0, [R2] 	; Write back floating point result to memory
-	BX LR ; Return from function call
+	LDR			R5, = 0			; Initialize averaging_loop counter
+	VSUB.F32 	S0, S0, S0		; Initialize total ; TODO: FIX THIS HACK INITIALISATION 
+average_loop
+	CMP			R5, R3 			; Compare loop index to coeffs length
+	BEQ 		average_exit 	; If reached loop end branch out
+	VLDR.F32 	S1, [R0] 		; Load next data element
+	VLDR.F32	S2, [R1]		; Load next coefficient
+	VFMA.F32	S0, S1, S2 		; Multiply data and coeff, then accumulate on total
+	ADD 		R5, R5, #0x1 	; Increment index
+	ADD 		R0, R0, #0x4 	; Shift data pointer to next element
+	ADD 		R1, R1, #0x4 	; Shift data pointer to next element
+	B 			average_loop	; Jump to beginning of loop
+average_exit	
+	VSTR.F32	S0, [R2] 		; Write back floating point result to memory
+	BX 			LR				; Return from function call
 	ENDP
 		
 	END

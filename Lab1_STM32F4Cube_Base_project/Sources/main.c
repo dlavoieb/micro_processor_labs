@@ -4,7 +4,7 @@
 #include "main.h"
 
 #define COEFFS_LENGTH 5
-#define DATA_LENGTH 1000
+#define DATA_LENGTH 20
 
 //CMSIS Defines
 #define NUM_TAPS 5
@@ -12,6 +12,7 @@
 
 
 static float32_t output[DATA_LENGTH];
+static float32_t output_asm[DATA_LENGTH];
 static float32_t data [DATA_LENGTH + COEFFS_LENGTH];
 static float32_t firStateF32[BLOCK_SIZE + NUM_TAPS - 1];
 static float coeffs[COEFFS_LENGTH] = {0.1, 0.15, 0.5, 0.15, 0.1};
@@ -48,9 +49,12 @@ int main()
 	//---Assembly Implementation---
 	//-----------------------------
 //	FIR_asm();
-	AVERAGE_asm(&data[1], coeffs, &output[1], COEFFS_LENGTH);
-	AVERAGE_asm(&data[3], coeffs, &output[3], COEFFS_LENGTH);
-	AVERAGE_asm(&data[5], coeffs, &output[5], COEFFS_LENGTH);
+	FIR_asm(&data[1], coeffs, output_asm, COEFFS_LENGTH, DATA_LENGTH);
+//	printf("ASM implementation: ");
+//	print_output(output_asm, DATA_LENGTH);
+//	int compate = 0;
+//	compate = memcmp(output, output_asm, DATA_LENGTH);
+//	printf("compare result: %d", compate);
 	
 	//--------------------------
 	//---CMSIS Implementation---

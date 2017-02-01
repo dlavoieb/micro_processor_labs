@@ -4,4 +4,4 @@ void print_data(float32_t* data, size_t length);
 
 //--- Assembly Functions ---
 void AVERAGE_asm(float32_t*, float32_t*, float32_t*, size_t);
-void FIR_asm(void);
+void FIR_asm(float32_t*, float32_t*, float32_t*, size_t, size_t);
