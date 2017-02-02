@@ -2,9 +2,10 @@
 #include "arm_math.h"
 #include <stdlib.h>
 #include "main.h"
+#include <math.h>
 
 #define COEFFS_LENGTH 5
-#define DATA_LENGTH 2000
+#define DATA_LENGTH 100
 
 //CMSIS Defines
 #define NUM_TAPS COEFFS_LENGTH
@@ -48,7 +49,6 @@ int main()
 	//-----------------------------
 	//---Assembly Implementation---
 	//-----------------------------
-//	FIR_asm();
 	FIR_asm(&data[1], coeffs, output_asm, COEFFS_LENGTH, DATA_LENGTH);
 	printf("ASM implementation: ");
 	print_output(output_asm, DATA_LENGTH);
@@ -56,8 +56,8 @@ int main()
 	//--------------------------
 	//---CMSIS Implementation---
 	//--------------------------
-  arm_fir_instance_f32 S;
-  float32_t  *inputF32, *outputF32;
+    arm_fir_instance_f32 S;
+    float32_t  *inputF32, *outputF32;
 	uint32_t blockSize = BLOCK_SIZE;
 	uint32_t numBlocks = DATA_LENGTH/BLOCK_SIZE;
 
@@ -77,7 +77,33 @@ int main()
   }
 
 	print_output(outputF32, DATA_LENGTH);
-	
+	//------------------------
+    //--part b data analysis--
+	//------------------------
+
+    float32_t difference[DATA_LENGTH];
+    float32_t avg;
+    datastream_substraction(&data[COEFFS_LENGTH], output, difference, DATA_LENGTH);
+    print_data(difference, DATA_LENGTH);
+    float32_t std_dev = std_deviation(difference, &avg, DATA_LENGTH);
+    printf("STD DEVIATION: %f\nAVERAGE: %f\n", std_dev, avg);
+
+    // correlation between data and output
+  
+  
+    // --- CMSIS DATA ANALYSIS
+    arm_sub_f32 (&data[COEFFS_LENGTH], output, difference, DATA_LENGTH);
+    printf("Difference from CMSIS: ");
+    print_output(difference, DATA_LENGTH);
+  
+    arm_std_f32 (difference, DATA_LENGTH, &std_dev);
+	arm_mean_f32 (difference, DATA_LENGTH, &avg);
+    printf("STD DEVIATION: %f\nAVERAGE: %f\n", std_dev, avg);
+  
+    arm_correlate_f32 (&data[COEFFS_LENGTH], DATA_LENGTH, output, DATA_LENGTH, difference);
+    printf("Correlation from CMSIS: ");
+    print_output(difference, DATA_LENGTH);
+    
 	while(1);
 }
 
@@ -108,4 +134,26 @@ float32_t average(float * data, float * coeffs, size_t length) {
 		prod_sum += data[i] * coeffs[i];
 	}
 	return prod_sum;
+}
+
+void datastream_substraction(float32_t * data_one, float32_t * data_two, float32_t * output, size_t length) {
+    for (int i = 0; i < length; i++) {
+        output[i] = data_one[i] - data_two[i];
+    }
+}
+
+float32_t std_deviation(float32_t* data, float32_t* avg, size_t length) {
+    // average of dataset
+    float32_t sum = 0;
+    for (int i = 0; i < length; i++) {
+        sum += data[i];
+    }
+    *avg = sum / (float32_t) length;
+    
+    float32_t total_deviation;
+    for (int i = 0; i < length; i++) {
+        total_deviation += ((data[i] - (*avg)) * (data[i] - (*avg)));
+    }
+    
+    return sqrt(total_deviation/length);
 }
