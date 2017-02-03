@@ -5,7 +5,7 @@
 #include <math.h>
 
 #define COEFFS_LENGTH 5
-#define DATA_LENGTH 100
+#define DATA_LENGTH 10
 
 //CMSIS Defines
 #define NUM_TAPS COEFFS_LENGTH
@@ -76,19 +76,30 @@ int main()
     }
 
     print_output(outputF32, DATA_LENGTH);
+    
+    
     //------------------------
     //--part b data analysis--
     //------------------------
-
+    
     float32_t difference[DATA_LENGTH];
     float32_t avg;
+    
+    // Subtraction of original data stream and data obtained by filter tracking.
     datastream_substraction(&data[COEFFS_LENGTH], output, difference, DATA_LENGTH);
     print_data(difference, DATA_LENGTH);
+    
+    // Calculates the standard deviation and the average for for the difference.
     float32_t std_dev = std_deviation(difference, &avg, DATA_LENGTH);
     printf("STD DEVIATION: %f\nAVERAGE: %f\n", std_dev, avg);
 
-    // correlation between data and output
-  
+    /* 
+     * Calculates the correlation between original and tracked vectors.
+     */
+    float32_t correlation_data[DATA_LENGTH * 2 - 1];
+    correlation(correlation_data, &data[COEFFS_LENGTH], output, DATA_LENGTH);
+    printf("Calculate correlation :");
+    print_output(correlation_data, DATA_LENGTH);
   
     // --- CMSIS DATA ANALYSIS
     arm_sub_f32 (&data[COEFFS_LENGTH], output, difference, DATA_LENGTH);
@@ -98,7 +109,7 @@ int main()
     arm_std_f32 (difference, DATA_LENGTH, &std_dev);
     arm_mean_f32 (difference, DATA_LENGTH, &avg);
     printf("STD DEVIATION: %f\nAVERAGE: %f\n", std_dev, avg);
-  
+
     arm_correlate_f32 (&data[COEFFS_LENGTH], DATA_LENGTH, output, DATA_LENGTH, difference);
     printf("Correlation from CMSIS: ");
     print_output(difference, DATA_LENGTH);
@@ -155,4 +166,30 @@ float32_t std_deviation(float32_t* data, float32_t* avg, size_t length) {
     }
     
     return sqrt(total_deviation/length);
+}
+
+void correlation(float32_t * correlated, float32_t * data, float32_t * filtered_data, size_t length) {
+    /*
+     * Conceptually the same as convolution, except we do not flip the second data set the way we do in convolution.
+     */
+    
+    // Phase 1, the data is being overlapped from the left by the filtered data set.
+    int index = 0;
+    int overlap;
+    for (overlap = 1;overlap <= length; overlap++){
+        correlated[index] = 0;
+        for (int i = 0; i < overlap; i++){
+            correlated[index] += data[i] * filtered_data[length - i - 1];
+        }
+        index++;
+    }
+
+    // Phase 2, the overlap between the data set and the filtered data set is diminishing.
+    for (;overlap > 0; overlap--) {
+        correlated[index] = 0;
+        for (int i = 0; i < overlap; i++){
+            correlated[index] += filtered_data[i] * data[i + length - overlap];
+        }
+        index++;
+    }
 }
