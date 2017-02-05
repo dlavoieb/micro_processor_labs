@@ -9,9 +9,10 @@
 
 //CMSIS Defines
 #define NUM_TAPS COEFFS_LENGTH
-#define BLOCK_SIZE 32 
+#define BLOCK_SIZE 32
 
 
+static float32_t data_demo[DATA_LENGTH] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 static float32_t output[DATA_LENGTH];
 static float32_t output_asm[DATA_LENGTH];
 static float32_t data [DATA_LENGTH + COEFFS_LENGTH];
@@ -26,15 +27,15 @@ int main()
     }
     // create data values
     for (int i = COEFFS_LENGTH; i<DATA_LENGTH + COEFFS_LENGTH; i++) {
-        data[i] = i;
+        data[i] = data_demo[COEFFS_LENGTH - i];
     }
-    
+
     // ==== PART A ====
 
     //-----------------------------
     //---Custom C implementation---
     //-----------------------------
-    int data_index = COEFFS_LENGTH;    
+    int data_index = COEFFS_LENGTH;
     while (data_index < COEFFS_LENGTH + DATA_LENGTH) {
         //build a window
         //compute average for window
@@ -42,26 +43,22 @@ int main()
         output[data_index - COEFFS_LENGTH] = average(&data[data_index - COEFFS_LENGTH + 1], coeffs, COEFFS_LENGTH);
         data_index++;
     }
-    
+
     // print out the results
     print_data(data, DATA_LENGTH + COEFFS_LENGTH);
     print_output(output, DATA_LENGTH);
-    
-    
+
+
     //-----------------------------
     //---Assembly Implementation---
     //-----------------------------
     FIR_asm(&data[1], coeffs, output_asm, COEFFS_LENGTH, DATA_LENGTH);
     printf("ASM implementation: ");
     print_output(output_asm, DATA_LENGTH);
-    
+
     //--------------------------
     //---CMSIS Implementation---
     //--------------------------
-    arm_fir_instance_f32 S;
-    float32_t  *inputF32, *outputF32;
-    uint32_t blockSize = BLOCK_SIZE;
-    uint32_t numBlocks = DATA_LENGTH/BLOCK_SIZE;
 
     // Initialize input and output buffer pointers
     inputF32 = &data[5];
@@ -76,13 +73,13 @@ int main()
     }
 
     print_output(outputF32, DATA_LENGTH);
-    
-    
+
+
     // ==== Part b ====
-    
+
     float32_t difference[DATA_LENGTH];
     float32_t avg;
-    
+
     // -------------------------------
     // --- Custom C Implementation ---
     // -------------------------------
@@ -90,7 +87,7 @@ int main()
     // Subtraction of original data stream and data obtained by filter tracking.
     datastream_substraction(&data[COEFFS_LENGTH], output, difference, DATA_LENGTH);
     print_data(difference, DATA_LENGTH);
-    
+
     // Calculates the standard deviation and the average for for the difference.
     float32_t std_dev = std_deviation(difference, &avg, DATA_LENGTH);
     printf("STD DEVIATION: %f\nAVERAGE: %f\n", std_dev, avg);
@@ -101,7 +98,7 @@ int main()
     correlation(correlation_data, &data[COEFFS_LENGTH], output, DATA_LENGTH);
     printf("Calculate correlation :");
     print_output(correlation_data, DATA_LENGTH);
-  
+
     // ---------------------------
     // --- CMSIS DATA ANALYSIS ---
     // ---------------------------
@@ -109,7 +106,7 @@ int main()
     arm_sub_f32 (&data[COEFFS_LENGTH], output, difference, DATA_LENGTH);
     printf("Difference from CMSIS: ");
     print_output(difference, DATA_LENGTH);
-  
+
     arm_std_f32 (difference, DATA_LENGTH, &std_dev);
     arm_mean_f32 (difference, DATA_LENGTH, &avg);
     printf("STD DEVIATION: %f\nAVERAGE: %f\n", std_dev, avg);
@@ -117,7 +114,7 @@ int main()
     arm_correlate_f32 (&data[COEFFS_LENGTH], DATA_LENGTH, output, DATA_LENGTH, difference);
     printf("Correlation from CMSIS: ");
     print_output(difference, DATA_LENGTH);
-    
+
     while(1);
 }
 
@@ -179,12 +176,12 @@ float32_t std_deviation(float32_t* data, float32_t* avg, size_t length) {
         sum += data[i];
     }
     *avg = sum / (float32_t) length;
-    
+
     float32_t total_deviation;
     for (int i = 0; i < length; i++) {
         total_deviation += ((data[i] - (*avg)) * (data[i] - (*avg)));
     }
-    
+
     return sqrt(total_deviation/length);
 }
 

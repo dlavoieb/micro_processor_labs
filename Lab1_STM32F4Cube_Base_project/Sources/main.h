@@ -6,5 +6,4 @@ void datastream_substraction(float32_t * data_one, float32_t * data_two, float32
 void correlation(float32_t * correlated, float32_t * data, float32_t * filtered_data, size_t length);
 
 //--- Assembly Functions ---
-void AVERAGE_asm(float32_t*, float32_t*, float32_t*, size_t);
 void FIR_asm(float32_t*, float32_t*, float32_t*, size_t, size_t);
