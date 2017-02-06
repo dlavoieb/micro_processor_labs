@@ -36,3 +36,6 @@ Lab1_STM32F4Cube_Base_project/Listings/
 Lab1_STM32F4Cube_Base_project/Objects/
 *.scvd
 Lab1_STM32F4Cube_Base_project/Base_Project.uvguix.David Lavoie-Boutin
+*.d
+Lab2_STM32F4Cube_Base_project/LAB2/MDK-ARM/LAB2 Configuration/
+Lab2_STM32F4Cube_Base_project/LAB2/MDK-ARM/LAB2.uvguix.David Lavoie-Boutin
