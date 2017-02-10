@@ -50,5 +50,5 @@ void SysTick_Handler(void)
 
 void HAL_SYSTICK_Callback(void)
 {
-	systick_flag = 1;
+	systick_flag = 1; // flag set to enable main loop section
 }

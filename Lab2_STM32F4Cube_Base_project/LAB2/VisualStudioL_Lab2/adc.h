@@ -6,6 +6,4 @@
 void ConfigureADC(void);
 void ConfigureDMA(void);
 
-
-
 #endif // ADC_CONFIG_H_
