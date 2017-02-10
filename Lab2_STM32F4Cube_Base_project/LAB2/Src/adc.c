@@ -1,44 +1,78 @@
-/**
-  ******************************************************************************
-  * File Name          : ADC.c
-  * Description        : This file provides code for the configuration
-  *                      of the ADC instances.
-  ******************************************************************************
-  *
-  * COPYRIGHT(c) 2017 STMicroelectronics
-  *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
-  ******************************************************************************
-  */
-
-/* Includes ------------------------------------------------------------------*/
 #include "adc.h"
 
-/* USER CODE BEGIN 0 */
+DMA_HandleTypeDef  g_DmaHandle;
+ADC_HandleTypeDef g_AdcHandle;
 
-/* USER CODE END 0 */
+void ConfigureADC()
+{
+	__GPIOC_CLK_ENABLE();
+	__ADC1_CLK_ENABLE();
 
+	HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(ADC_IRQn);
 
+	ADC_ChannelConfTypeDef adcChannel;
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+	g_AdcHandle.Instance = ADC1;
+
+	g_AdcHandle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV8;  // 168 MHz divided by 8 = 21 MHz
+	g_AdcHandle.Init.Resolution = ADC_RESOLUTION_12B;
+	g_AdcHandle.Init.ScanConvMode = DISABLE;
+	g_AdcHandle.Init.ContinuousConvMode = ENABLE; //Enable continuous conversion callback
+	g_AdcHandle.Init.DiscontinuousConvMode = DISABLE;
+	g_AdcHandle.Init.NbrOfDiscConversion = 1;
+	g_AdcHandle.Init.ExternalTrigConvEdge = ADC_SOFTWARE_START;
+	g_AdcHandle.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+	g_AdcHandle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	g_AdcHandle.Init.NbrOfConversion = 1;
+	g_AdcHandle.Init.DMAContinuousRequests = ENABLE;
+	g_AdcHandle.Init.EOCSelection = DISABLE;
+
+	HAL_ADC_Init(&g_AdcHandle);
+	
+	adcChannel.Channel = ADC_CHANNEL_TEMPSENSOR;
+	adcChannel.Rank = 1;
+	adcChannel.SamplingTime = ADC_SAMPLETIME_28CYCLES;
+	adcChannel.Offset = 0;
+
+	if (HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel) != HAL_OK)
+	{
+;//		asm("bkpt 255");
+	}
+}
+
+void ConfigureDMA()
+{
+	__DMA2_CLK_ENABLE(); 
+	g_DmaHandle.Instance = DMA2_Stream4;
+  
+	g_DmaHandle.Init.Channel  = DMA_CHANNEL_0;
+	g_DmaHandle.Init.Direction = DMA_PERIPH_TO_MEMORY;
+	g_DmaHandle.Init.PeriphInc = DMA_PINC_DISABLE;
+	g_DmaHandle.Init.MemInc = DMA_MINC_ENABLE;
+	g_DmaHandle.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+	g_DmaHandle.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
+	g_DmaHandle.Init.Mode = DMA_CIRCULAR;
+	g_DmaHandle.Init.Priority = DMA_PRIORITY_HIGH;
+	g_DmaHandle.Init.FIFOMode = DMA_FIFOMODE_DISABLE;         
+	g_DmaHandle.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_HALFFULL;
+	g_DmaHandle.Init.MemBurst = DMA_MBURST_SINGLE;
+	g_DmaHandle.Init.PeriphBurst = DMA_PBURST_SINGLE; 
+    
+	HAL_DMA_Init(&g_DmaHandle);
+    
+	__HAL_LINKDMA(&g_AdcHandle, DMA_Handle, g_DmaHandle);
+ 
+	HAL_NVIC_SetPriority(DMA2_Stream4_IRQn, 0, 0);   
+	HAL_NVIC_EnableIRQ(DMA2_Stream4_IRQn);
+}
+
+void DMA2_Stream4_IRQHandler()
+{
+	HAL_DMA_IRQHandler(&g_DmaHandle);
+}
+ 
+void ADC_IRQHandler()
+{
+	HAL_ADC_IRQHandler(&g_AdcHandle);
+}
