@@ -1,5 +1,8 @@
 #include "display.h"
+#ifdef VISUAL_STUDIO
 #include <assert.h>
+#endif // VISUAL_STUDIO
+
 
 #define V25 0.76
 
@@ -20,7 +23,10 @@ float fahrenheit_from_ADC_RAW(float adc_val)
 
 void display_temperature(float temperature, uint8_t units)
 {
-    assert(units == CELCIUS_UNITS || units == FARENHEIT_UNITS); // carefull asserts are only compiled and executed in debug code
+#ifdef VISUAL_STUDIO
+	assert(units == CELCIUS_UNITS || units == FARENHEIT_UNITS); // carefull asserts are only compiled and executed in debug code
+#endif // VISUAL_STUDIO
+
     unit_char = (units == CELCIUS_UNITS) ? 'C' : 'F'; // If not celcius, assume it's farenheit
 
 }

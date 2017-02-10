@@ -332,6 +332,9 @@
 #ifndef __ULFRACT_MIN__
 #define __ULFRACT_MIN__ 0.0ULR
 #endif
+#ifndef VISUAL_STUDIO
+#define VISUAL_STUDIO 1
+#endif
 #ifndef __ARM_PCS_VFP
 #define __ARM_PCS_VFP 1
 #endif
@@ -373,6 +376,9 @@
 #endif
 #ifndef __DQ_IBIT__
 #define __DQ_IBIT__ 0
+#endif
+#ifndef STM32F407xx
+#define STM32F407xx 1
 #endif
 #ifndef __DBL_MAX__
 #define __DBL_MAX__ double(1.7976931348623157e+308L)
@@ -658,6 +664,9 @@
 #ifndef __UDQ_FBIT__
 #define __UDQ_FBIT__ 64
 #endif
+#ifndef DEBUG
+#define DEBUG 1
+#endif
 #ifndef __INT8_TYPE__
 #define __INT8_TYPE__ signed char
 #endif
@@ -705,6 +714,9 @@
 #endif
 #ifndef __SIZEOF_PTRDIFF_T__
 #define __SIZEOF_PTRDIFF_T__ 4
+#endif
+#ifndef stm32_flash_layout
+#define stm32_flash_layout 1
 #endif
 #ifndef __LACCUM_EPSILON__
 #define __LACCUM_EPSILON__ 0x1P-31LK
@@ -1171,19 +1183,14 @@
 #ifndef __ATOMIC_RELEASE
 #define __ATOMIC_RELEASE 3
 #endif
-#ifndef DEBUG
-#define DEBUG 1
-#endif
-#ifndef stm32_flash_layout
-#define stm32_flash_layout 
-#endif
-#ifndef STM32F407xx
-#define STM32F407xx 
-#endif
 #endif
 
 // --- Include directories begin --- //
 //.
+//C:\Users\DAVIDL~1\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc
+//C:\Users\DAVIDL~1\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc/Legacy
+//C:\Users\DAVIDL~1\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32/STM32F4xxxx/CMSIS_HAL/Device/ST/STM32F4xx/Include
+//C:\Users\DAVIDL~1\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32/STM32F4xxxx/CMSIS_HAL/Include
 //c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/6.2.0/../../../../arm-eabi/include/c++/6.2.0
 //c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/6.2.0/../../../../arm-eabi/include/c++/6.2.0/arm-eabi/thumb/fpu/cortex_m4
 //c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/6.2.0/../../../../arm-eabi/include/c++/6.2.0/backward
@@ -1191,10 +1198,6 @@
 //c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/6.2.0/include-fixed
 //c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/6.2.0/../../../../arm-eabi/sys-include
 //c:\sysgcc\arm-eabi\bin\../lib/gcc/arm-eabi/6.2.0/../../../../arm-eabi/include
-//C:\Users\DAVIDL~1\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc
-//C:\Users\DAVIDL~1\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc/Legacy
-//C:\Users\DAVIDL~1\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32/STM32F4xxxx/CMSIS_HAL/Device/ST/STM32F4xx/Include
-//C:\Users\DAVIDL~1\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32/STM32F4xxxx/CMSIS_HAL/Include
 // --- Include directories end --- //
 
 

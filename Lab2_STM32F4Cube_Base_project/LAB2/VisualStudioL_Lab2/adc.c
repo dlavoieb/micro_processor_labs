@@ -37,7 +37,11 @@ void ConfigureADC()
 
 	if (HAL_ADC_ConfigChannel(&g_AdcHandle, &adcChannel) != HAL_OK)
 	{
+#ifdef VISUAL_STUDIO
 		asm("bkpt 255");
+#else		;
+#endif // VISUAL_STUDIO
+
 	}
 }
 
