@@ -3,18 +3,25 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#define CELCIUS_UNITS ((uint8_t) (1))
-#define FARENHEIT_UNITS ((uint8_t) (2))
+//#define CELCIUS_UNITS ((uint8_t) (1))
+//#define FARENHEIT_UNITS ((uint8_t) (2))
 
-float celcius_from_ADC_RAW(float adc_val);
-float fahrenheit_from_ADC_RAW(float adc_val);
+typedef enum
+{
+	CELCIUS_UNITS = 0,
+	FARENHEIT_UNITS
+} DisplayUnits;
 
-void display_temperature(float temperature, uint8_t units);
+typedef enum
+{
+	DIGIT_1 = 0,
+	DIGIT_2,
+	DIGIT_3,
+	DIGIT_4
+}DigitNumber;
+
+void display_temperature(float temperature, DisplayUnits units, DigitNumber digit);
 
 void gpio_led_init(void);
-void init_segment_disp(void);
-void init_segment_segments(void);
-void led_number(char number, int dot);
-void led_char(char number, int dot);
 
 #endif // !DISPLAY_H

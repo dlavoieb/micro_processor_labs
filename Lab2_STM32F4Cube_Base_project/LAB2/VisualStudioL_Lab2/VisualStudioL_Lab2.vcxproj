@@ -133,6 +133,8 @@
     <ClCompile Include="..\..\..\..\..\..\Users\David Lavoie-Boutin\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\STM32F4xxxx\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_sdmmc.c" />
     <ClCompile Include="..\..\..\..\..\..\Users\David Lavoie-Boutin\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\STM32F4xxxx\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_usb.c" />
     <ClCompile Include="adc.c" />
+    <ClCompile Include="button.c" />
+    <ClCompile Include="conversion.c" />
     <ClCompile Include="display.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="SysClock_Config.c" />
@@ -229,6 +231,8 @@
     <ClInclude Include="..\..\..\..\..\..\Users\David Lavoie-Boutin\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\STM32F4xxxx\STM32F4xx_HAL_Driver\Inc\stm32f4xx_ll_sdmmc.h" />
     <ClInclude Include="..\..\..\..\..\..\Users\David Lavoie-Boutin\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\STM32F4xxxx\STM32F4xx_HAL_Driver\Inc\stm32f4xx_ll_usb.h" />
     <ClInclude Include="adc.h" />
+    <ClInclude Include="button.h" />
+    <ClInclude Include="conversion.h" />
     <ClInclude Include="display.h" />
     <ClInclude Include="stm32f4xx_hal_conf.h" />
     <ClInclude Include="SysClock_Config.h" />

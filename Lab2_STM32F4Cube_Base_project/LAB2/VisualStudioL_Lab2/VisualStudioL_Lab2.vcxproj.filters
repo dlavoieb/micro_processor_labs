@@ -254,6 +254,12 @@
     <ClCompile Include="SysClock_Config.c">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="conversion.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="button.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stm32f4xx_hal_conf.h">
@@ -533,6 +539,12 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="SysClock_Config.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="conversion.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="button.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>
