@@ -9,6 +9,7 @@
 #define COEFFS_LENGTH 5
 #define FILTER_COUNTER 100 // todo: change to adjust filtering frequency
 #define DISPLAY_COUNTER 1000 // todo: change to adjust display frequency
+#define ALARM_COUNTER 20 // todo: change to adjust alarm toggle frequency
 
 static float coeffs[COEFFS_LENGTH] = { 0.1, 0.15, 0.5, 0.15, 0.1 };
 uint32_t g_ADCBuffer[ADC_BUFFER_LENGTH];
@@ -23,7 +24,8 @@ DisplayUnits unit_selector;		///< Determines which unit the temperature is displ
 GPIO_PinState past_button;		///< Save past button value to prevent continuous switching of units
 float g_AdcValue;				///< Filtered RAW Adc value, still needs scaling and interpretation
 float temperature;				///< ADC value converted to the proper units
-
+uint8_t alarm;					
+uint32_t alarm_counter;
 
 int main(void)
 {
@@ -63,6 +65,7 @@ int main(void)
 			// Display new data element
 			if (display_counter++ > DISPLAY_COUNTER)
 			{
+				alarm_counter = (alarm_counter + 1) % ALARM_COUNTER;
 				// Update displayed value only at start of cycle
 				if (display_pin == DIGIT_1)
 				{
@@ -81,11 +84,20 @@ int main(void)
 						temperature = celcius_from_ADC_RAW(g_AdcValue);
 					else if (unit_selector == FARENHEIT_UNITS)
 						temperature = fahrenheit_from_ADC_RAW(g_AdcValue);
+					
+					alarm = temp_alarm(temperature, unit_selector);
 				}
 				
 				// Increment which pin is updated and display value
-				display_pin = (display_pin + 1) % 4; // go to next digit 
-				display_temperature(temperature, unit_selector, display_pin);				
+				display_pin = (display_pin + 1) % 4; 
+				
+				// Check is alarm is active, if active
+				if (!alarm || display_counter > ALARM_COUNTER/2)
+					// Normal display
+					display_temperature(temperature, unit_selector, display_pin);				
+				else
+					// Disable display
+					display_temperature(-1, unit_selector, display_pin);
 			}
 		}
 		

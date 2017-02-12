@@ -9,6 +9,11 @@ void display_temperature(float temperature, DisplayUnits units, DigitNumber  dig
 	char display_caracter;
 	uint8_t dot = 0;
 	select_digit(digit);
+	if (temperature < 0)
+	{
+		display_caracter = '#';
+		digit = -1;
+	}
 	
 	switch (digit)
 	{

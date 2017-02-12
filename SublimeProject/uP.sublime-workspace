@@ -80,58 +80,20 @@
 	"buffers":
 	[
 		{
-			"file": "/C/Users/David Lavoie-Boutin/Documents/Repositories/micro_processor_labs/Lab1_STM32F4Cube_Base_project/Sources/main.c",
+			"file": "/C/embedded_project/micro_processor_labs/Lab2_STM32F4Cube_Base_project/LAB2/VisualStudioL_Lab2/display.c",
 			"settings":
 			{
-				"buffer_size": 6097,
-				"encoding": "UTF-8",
+				"buffer_size": 11850,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"contents": "diff --git a/Lab1_STM32F4Cube_Base_project/Sources/main.c b/Lab1_STM32F4Cube_Base_project/Sources/main.c\nindex eef9446..3113249 100644\n--- a/Lab1_STM32F4Cube_Base_project/Sources/main.c\n+++ b/Lab1_STM32F4Cube_Base_project/Sources/main.c\n@@ -97,9 +97,9 @@ int main()\n      * Calculates the correlation between original and tracked vectors.\n      */\n     float32_t correlation_data[DATA_LENGTH * 2 - 1];\n-    correlation(correlation_data, &data[COEFFS_LENGTH], output, DATA_LENGTH);\n+    correlation_second(correlation_data, &data[COEFFS_LENGTH], output, DATA_LENGTH);\n     printf(\"Calculate correlation :\");\n-    print_output(correlation_data, DATA_LENGTH);\n+    print_output(correlation_data, DATA_LENGTH * 2 - 1);\n   \n     // --- CMSIS DATA ANALYSIS\n     arm_sub_f32 (&data[COEFFS_LENGTH], output, difference, DATA_LENGTH);\n@@ -110,9 +110,9 @@ int main()\n     arm_mean_f32 (difference, DATA_LENGTH, &avg);\n     printf(\"STD DEVIATION: %f\\nAVERAGE: %f\\n\", std_dev, avg);\n \n-    arm_correlate_f32 (&data[COEFFS_LENGTH], DATA_LENGTH, output, DATA_LENGTH, difference);\n+    arm_correlate_f32 (&data[COEFFS_LENGTH], DATA_LENGTH, output, DATA_LENGTH, correlation_data);\n     printf(\"Correlation from CMSIS: \");\n-    print_output(difference, DATA_LENGTH);\n+    print_output(correlation_data, DATA_LENGTH*2-1);\n     \n     while(1);\n }\n@@ -185,11 +185,22 @@ void correlation(float32_t * correlated, float32_t * data, float32_t * filtered_\n     }\n \n     // Phase 2, the overlap between the data set and the filtered data set is diminishing.\n+       // at this point, haven't we reached the end of our data array? \n     for (;overlap > 0; overlap--) {\n-        correlated[index] = 0;\n+        correlated[index] = 0; \n         for (int i = 0; i < overlap; i++){\n             correlated[index] += filtered_data[i] * data[i + length - overlap];\n         }\n         index++;\n     }\n }\n+\n+void correlation_second(float32_t * c, float32_t * a, float32_t * b, size_t length) {\n+       for (int n = 0; n < length*2-1; n++) {\n+               c[n] = 0;\n+               for (int k = 0; k < length; k++) {\n+                   if ((k-n) >= 0)\n+                   c[n] += a[k] * b[k-n]; // todo: check out of bounds\n+               }\n+       }\n+}\ndiff --git a/Lab1_STM32F4Cube_Base_project/Sources/main.h b/Lab1_STM32F4Cube_Base_project/Sources/main.h\nindex b366119..f84e7f6 100644\n--- a/Lab1_STM32F4Cube_Base_project/Sources/main.h\n+++ b/Lab1_STM32F4Cube_Base_project/Sources/main.h\n@@ -4,7 +4,7 @@ void print_data(float32_t* data, size_t length);\n float32_t std_deviation(float32_t* data, float32_t* avg, size_t length);\n void datastream_substraction(float32_t * data_one, float32_t * data_two, float32_t * output, size_t length);\n void correlation(float32_t * correlated, float32_t * data, float32_t * filtered_data, size_t length);\n-\n+void correlation_second (float32_t * correlated, float32_t * data, float32_t * filtered_data, size_t length);\n //--- Assembly Functions ---\n void AVERAGE_asm(float32_t*, float32_t*, float32_t*, size_t);\n void FIR_asm(float32_t*, float32_t*, float32_t*, size_t, size_t);\n",
+			"file": "/C/Users/David Lavoie-Boutin/OneDrive - McGill University/Classes/ECSE 426/ECSE426/Lab2_group12/Sources/main.c",
 			"settings":
 			{
-				"buffer_size": 3084,
-				"line_ending": "Unix",
-				"name": "stash@{1}",
-				"read_only": true,
-				"scratch": true
-			}
-		},
-		{
-			"file": "/C/Users/David Lavoie-Boutin/Documents/Repositories/micro_processor_labs/Lab1_STM32F4Cube_Base_project/Sources/Assembly.s",
-			"settings":
-			{
-				"buffer_size": 2184,
+				"buffer_size": 6095,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
-			}
-		},
-		{
-			"contents": "Data array: \n[0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 5.000000, 6.000000, 7.000000, 8.000000, 9.000000, 10.000000, 11.000000, 12.000000, 13.000000, 14.000000, ]\nOutput values: \n[0.500000, 1.350000, 4.100000, 5.600000, 7.000000, 8.000000, 9.000000, 10.000000, 11.000000, 11.999999, ]\nASM implementation: Output values: \n[0.500000, 1.350000, 4.100000, 5.600000, 7.000000, 8.000000, 9.000000, 10.000000, 11.000000, 11.999999, ]\nOutput values: \n[0.500000, 1.350000, 4.100000, 5.600000, 7.000000, 8.000000, 9.000000, 10.000000, 11.000000, 11.999999, ]\nData array: \n[4.500000, 4.650000, 2.900000, 2.400000, 2.000000, 2.000000, 2.000000, 2.000000, 2.000000, 2.000001, ]\nSTD DEVIATION: 1.004104\nAVERAGE: 2.645000\nCalculate correlation :Output values: \n[59.999996, 126.000000, 196.000000, 268.000000, 340.000000, 410.000000, 471.600006, 520.799988, 538.349976, 545.349976, 693.549988, 757.099976, 645.650024, 537.200012, 432.750000, 333.300018, 239.850006, 153.400009, 80.949997, ]\nDifference from CMSIS: Output values: \n[4.500000, 4.650000, 2.900000, 2.400000, 2.000000, 2.000000, 2.000000, 2.000000, 2.000000, 2.000001, ]\nSTD DEVIATION: 1.058418\nAVERAGE: 2.645000\nCorrelation from CMSIS: Output values: \n[59.999996, 126.999992, 200.000000, 278.000000, 360.000000, 445.000000, 530.000000, 613.099976, 686.549988, 757.099976, 645.650024, 537.200012, 432.750000, 333.300018, 239.850006, 153.400009, 80.949997, 25.400000, 7.000000, ]\n\n",
-			"settings":
-			{
-				"buffer_size": 1434,
-				"line_ending": "Unix",
-				"name": "Data array:"
-			}
-		},
-		{
-			"file": "/C/Users/David Lavoie-Boutin/OneDrive - McGill University/CV/--Latest--/English.tex",
-			"settings":
-			{
-				"buffer_size": 22326,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/C/Users/David Lavoie-Boutin/OneDrive - McGill University/CV/--Latest--/Presentation Letter/mda.tex",
-			"settings":
-			{
-				"buffer_size": 2861,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
 			}
 		}
 	],
@@ -283,11 +245,19 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/David Lavoie-Boutin/Documents/Repositories/micro_processor_labs/Lab1_STM32F4Cube_Base_project",
-		"/C/Users/David Lavoie-Boutin/Documents/Repositories/micro_processor_labs/Lab1_STM32F4Cube_Base_project/Sources"
+		"/C/embedded_project/micro_processor_labs/Lab1_STM32F4Cube_Base_project",
+		"/C/embedded_project/micro_processor_labs/Lab2_STM32F4Cube_Base_project",
+		"/C/embedded_project/micro_processor_labs/Lab2_STM32F4Cube_Base_project/LAB2",
+		"/C/Users/David Lavoie-Boutin/OneDrive - McGill University/Classes/ECSE 426/ECSE426",
+		"/C/Users/David Lavoie-Boutin/OneDrive - McGill University/Classes/ECSE 426/ECSE426/Lab2_group12",
+		"/C/Users/David Lavoie-Boutin/OneDrive - McGill University/Classes/ECSE 426/ECSE426/Lab2_group12/Sources"
 	],
 	"file_history":
 	[
+		"/C/Users/David Lavoie-Boutin/OneDrive - McGill University/CV/--Latest--/English.tex",
+		"/C/Users/David Lavoie-Boutin/OneDrive - McGill University/CV/--Latest--/Presentation Letter/mda.tex",
+		"/C/Users/David Lavoie-Boutin/Documents/Repositories/micro_processor_labs/Lab1_STM32F4Cube_Base_project/Sources/Assembly.s",
+		"/C/Users/David Lavoie-Boutin/Documents/Repositories/micro_processor_labs/Lab1_STM32F4Cube_Base_project/Sources/main.c",
 		"/C/Users/David Lavoie-Boutin/Documents/Repositories/mcu-snippets/.gitignore",
 		"/C/Users/David Lavoie-Boutin/OneDrive - McGill University/Robotics/MR_2017/ProtocaseOrder/ProtocaseEmail.txt",
 		"/C/Users/David Lavoie-Boutin/OneDrive - McGill University/Robotics/MR_2017/simple_publisher.py",
@@ -392,173 +362,60 @@
 	"groups":
 	[
 		{
-			"selected": 5,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "/C/Users/David Lavoie-Boutin/Documents/Repositories/micro_processor_labs/Lab1_STM32F4Cube_Base_project/Sources/main.c",
+					"file": "/C/embedded_project/micro_processor_labs/Lab2_STM32F4Cube_Base_project/LAB2/VisualStudioL_Lab2/display.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6097,
+						"buffer_size": 11850,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3365,
-								3365
+								0,
+								0
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1828.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3084,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1302,
-								1254
-							]
-						],
-						"settings":
-						{
-							"git_root_dir": "C:\\Users\\David Lavoie-Boutin\\Documents\\Repositories\\micro_processor_labs",
-							"syntax": "Packages/Diff/Diff.tmLanguage",
-							"word_wrap": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/C/Users/David Lavoie-Boutin/Documents/Repositories/micro_processor_labs/Lab1_STM32F4Cube_Base_project/Sources/Assembly.s",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2184,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/ARM Assembly/Syntaxes/ARM Assembly.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1434,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1434,
-								1434
-							]
-						],
-						"settings":
-						{
-							"auto_name": "Data array:",
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"word_wrap": false
-						},
-						"translation.x": 728.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "/C/Users/David Lavoie-Boutin/OneDrive - McGill University/CV/--Latest--/English.tex",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 22326,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/LaTeX/LaTeX.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2691.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "/C/Users/David Lavoie-Boutin/OneDrive - McGill University/CV/--Latest--/Presentation Letter/mda.tex",
+					"buffer": 1,
+					"file": "/C/Users/David Lavoie-Boutin/OneDrive - McGill University/Classes/ECSE 426/ECSE426/Lab2_group12/Sources/main.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2861,
+						"buffer_size": 6095,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								63,
-								63
+								5264,
+								5264
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/LaTeX/LaTeX.sublime-syntax"
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
