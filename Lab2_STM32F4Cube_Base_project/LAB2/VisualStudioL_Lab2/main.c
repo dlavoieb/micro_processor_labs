@@ -5,11 +5,12 @@
 #include "conversion.h"
 #include "button.h"
 
-#define ADC_BUFFER_LENGTH 4096
+#define ADC_BUFFER_LENGTH 5
 #define COEFFS_LENGTH 5
 #define FILTER_COUNTER 10 // todo: change to adjust filtering frequency
 #define DISPLAY_COUNTER 15 // todo: change to adjust display frequency
 #define ALARM_COUNTER 150 // todo: change to adjust alarm toggle frequency
+#define POLL_TIMEOUT 10000
 
 static float coeffs[COEFFS_LENGTH] = { 0.1, 0.15, 0.5, 0.15, 0.1 };
 uint32_t g_ADCBuffer[ADC_BUFFER_LENGTH];
@@ -34,7 +35,7 @@ int main(void)
 	SystemClock_Config();
 	ConfigureADC();
 	ConfigureDMA();
-	HAL_ADC_Start_DMA(&g_AdcHandle, g_ADCBuffer, ADC_BUFFER_LENGTH);
+	//HAL_ADC_Start_DMA(&g_AdcHandle, g_ADCBuffer, ADC_BUFFER_LENGTH);
 	init_button_gpio();
 	gpio_led_init();
 	
@@ -58,6 +59,15 @@ int main(void)
 			{
 				filter_counter = 0;
 				g_AdcValue = 0;
+				for (int i = 0; i < ADC_BUFFER_LENGTH - 1; i++)
+				{
+					g_ADCBuffer[i] = g_ADCBuffer[i + 1];
+				}
+				
+				HAL_ADC_Start(&g_AdcHandle);
+				if (HAL_ADC_PollForConversion(&g_AdcHandle, POLL_TIMEOUT) == HAL_OK)
+					g_ADCBuffer[ADC_BUFFER_LENGTH-1] = HAL_ADC_GetValue(&g_AdcHandle);
+				HAL_ADC_Stop(&g_AdcHandle);
 				
 				for (int i = 0; i < 5; i++)
 					g_AdcValue += *(g_ADCBuffer + i) * coeffs[i];
