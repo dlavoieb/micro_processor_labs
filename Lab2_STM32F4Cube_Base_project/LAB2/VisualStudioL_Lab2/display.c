@@ -14,28 +14,54 @@ void display_temperature(float temperature, DisplayUnits units, DigitNumber  dig
 		display_caracter = '#';
 		digit = -1;
 	}
-	
-	switch (digit)
+	if (temperature < 100)
 	{
-	case DIGIT_1:
-		// first symbol:
-		display_caracter = '0' + (((uint8_t) temperature) / 10);
-		break;
-	case DIGIT_2:
-		//second symbol:
-		display_caracter = '0' + (((uint8_t) temperature) % 10);
-		dot = 1;
-		break;
-	case DIGIT_3:
-		//thrird sybmol:
-		display_caracter = '0' + (((uint32_t)(temperature * 10.0)) % 10);
-		break;
-	case DIGIT_4:
-		//unit symbol
-		display_caracter = (units == CELCIUS_UNITS) ? 'C' : 'F'; // If not celcius, assume it's farenheit
-		break;
-	default:
-		break;
+		switch (digit)
+		{
+		case DIGIT_1:
+			// first symbol:
+			display_caracter = '0' + (((uint32_t) temperature) / 10);
+			break;
+		case DIGIT_2:
+			//second symbol:
+			display_caracter = '0' + (((uint32_t) temperature) % 10);
+			dot = 1;
+			break;
+		case DIGIT_3:
+			//thrird sybmol:
+			display_caracter = '0' + (((uint32_t)(temperature * 10.0)) % 10);
+			break;
+		case DIGIT_4:
+			//unit symbol
+			display_caracter = (units == CELCIUS_UNITS) ? 'C' : 'F'; // If not celcius, assume it's farenheit
+			break;
+		default:
+			break;
+		}
+	}
+	else
+	{
+		switch (digit)
+		{
+		case DIGIT_1:
+			// first symbol:
+			display_caracter = '0' + (((uint32_t) temperature) / 100);
+			break;
+		case DIGIT_2:
+			//second symbol:
+			display_caracter = '0' + ((((uint32_t) temperature) / 10) % 10);
+			break;
+		case DIGIT_3:
+			//thrird sybmol:
+			display_caracter = '0' + (((uint32_t)(temperature)) % 10);
+			break;
+		case DIGIT_4:
+			//unit symbol
+			display_caracter = (units == CELCIUS_UNITS) ? 'C' : 'F'; // If not celcius, assume it's farenheit
+			break;
+		default:
+			break;		
+		}
 	}
 	led_char(display_caracter, dot);
 }

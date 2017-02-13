@@ -2,8 +2,8 @@
 static const float V25 = 0.76;
 static const float av_slope = 2.5 / 1000;
 
-static const float THREASHOLD_CELCIUS = 40.0;
-static const float THREASHOLD_FARENHEIT = 40.0;
+static const float THREASHOLD_CELCIUS = 45.0;
+static const float THREASHOLD_FARENHEIT = 113.0;
 
 float celcius_from_ADC_RAW(float adc_val) {
 	adc_val = adc_val * 3.0 / 4096.0;
