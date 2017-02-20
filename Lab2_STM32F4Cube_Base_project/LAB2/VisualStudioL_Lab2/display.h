@@ -43,11 +43,13 @@ typedef enum
 /**
  * @brief Sets the GPIO to output the selected digit of the temperature 
  *
- * This display function will display temperatures values between 0 and 99.9,
+ * This display function will display temperatures values between 0 and 999,
  * in the specified units.
+ *
  * It is left to the caller to figure out at what frequency and with which digit 
  * to call the function. It should be called once for every digit on the display, 
  * so four (4) times for the complete number.
+ *
  * @param temperature The temperature value to display
  * @param units The unit suffix will change based on this parameter
  * @param ditig This select which of the 4 digits will be set
