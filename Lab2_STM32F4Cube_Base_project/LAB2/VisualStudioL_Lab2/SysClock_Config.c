@@ -32,7 +32,7 @@ void SystemClock_Config(void)
 		__HAL_FLASH_PREFETCH_BUFFER_ENABLE();
 
 		/*Configures SysTick to provide 1000 Hz timeouts.*/
-	HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 10);
+	HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000);
 
 		/* This function sets the source clock for the internal SysTick Timer to be the maximum,
 		   in our case, HCLK is now 168MHz*/

@@ -8,7 +8,7 @@ void init_button_gpio(void)
 	gpio_init.Mode = GPIO_MODE_INPUT;
 	gpio_init.Speed = GPIO_SPEED_LOW;
 	gpio_init.Pin = GPIO_PIN_0;
-	gpio_init.Pull = GPIO_NOPULL;
+	gpio_init.Pull = GPIO_PULLDOWN;
 	
 	HAL_GPIO_Init(GPIOA, &gpio_init);
 }

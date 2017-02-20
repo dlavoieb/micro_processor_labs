@@ -5,7 +5,7 @@
 #include "conversion.h"
 #include "button.h"
 
-#define ADC_BUFFER_LENGTH 4096
+#define ADC_BUFFER_LENGTH 5
 #define COEFFS_LENGTH 5
 #define FILTER_COUNTER 10 // todo: change to adjust filtering frequency
 #define DISPLAY_COUNTER 15 // todo: change to adjust display frequency
