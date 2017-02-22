@@ -266,6 +266,9 @@
     <ClCompile Include="keypad.c">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="clock_config.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stm32f4xx_hal_conf.h">
@@ -557,6 +560,9 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="keypad.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="clock_config.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>
