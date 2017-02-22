@@ -4,9 +4,9 @@
 #Use VisualGDB Project Properties dialog or modify Makefile or per-configuration .mak files instead.
 
 #VisualGDB provides BSP_ROOT and TOOLCHAIN_ROOT via environment when running Make. The line below will only be active if GNU Make is started manually.
-BSP_ROOT ?= ../../../../../Users/David Lavoie-Boutin/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32
-EFP_BASE ?= ../../../../../Users/David Lavoie-Boutin/AppData/Local/VisualGDB/EmbeddedEFPs
-TESTFW_BASE ?= ../../../../../Users/David Lavoie-Boutin/AppData/Local/VisualGDB/TestFrameworks
+BSP_ROOT ?= ../../../../Users/David Lavoie-Boutin/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32
+EFP_BASE ?= ../../../../Users/David Lavoie-Boutin/AppData/Local/VisualGDB/EmbeddedEFPs
+TESTFW_BASE ?= ../../../../Users/David Lavoie-Boutin/AppData/Local/VisualGDB/TestFrameworks
 TOOLCHAIN_ROOT ?= C:/SysGCC/arm-eabi
 #Embedded toolchain
 CC := $(TOOLCHAIN_ROOT)/bin/arm-eabi-gcc.exe
@@ -27,7 +27,7 @@ LINUX_PACKAGES +=
 CFLAGS += 
 CXXFLAGS += 
 ASFLAGS += -mfpu=fpv4-sp-d16
-LDFLAGS += --specs=nano.specs 
+LDFLAGS +=  
 COMMONFLAGS += -mcpu=cortex-m4 -mthumb -mfloat-abi=hard
 LINKER_SCRIPT := $(BSP_ROOT)/STM32F4xxxx/LinkerScripts/STM32F407VG_flash.lds
 
