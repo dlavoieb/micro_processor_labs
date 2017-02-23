@@ -142,6 +142,7 @@
     <ClCompile Include="stm32f4xx_it.c" />
     <ClCompile Include="supporting_functions.c" />
     <ClCompile Include="system_stm32f4xx.c" />
+    <ClCompile Include="timer.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Users\David Lavoie-Boutin\AppData\Local\VisualGDB\EmbeddedBSPs\arm-eabi\com.sysprogs.arm.stm32\STM32F4xxxx\CMSIS_HAL\Device\ST\STM32F4xx\Include\stm32f4xx.h" />
@@ -242,6 +243,7 @@
     <ClInclude Include="stm32f4xx_hal_conf.h" />
     <ClInclude Include="stm32f4xx_it.h" />
     <ClInclude Include="supporting_functions.h" />
+    <ClInclude Include="timer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="debug.mak" />

@@ -269,6 +269,9 @@
     <ClCompile Include="clock_config.c">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="timer.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stm32f4xx_hal_conf.h">
@@ -563,6 +566,9 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="clock_config.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="timer.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>

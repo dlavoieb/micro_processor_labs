@@ -29,6 +29,7 @@
             <Value>$(TOOLCHAIN_ROOT)\bin;%PATH%</Value>
           </Record>
         </Records>
+        <EnvironmentSetupFiles />
       </Environment>
       <BackgroundMode xsi:nil="true" />
     </MakeCommandTemplate>
@@ -70,7 +71,7 @@
       <Entries>
         <KeyValue>
           <Key>com.sysprogs.arm.openocd.interface</Key>
-          <Value />
+          <Value>interface/stlink-v2-1.cfg</Value>
         </KeyValue>
         <KeyValue>
           <Key>com.sysprogs.arm.openocd.cpu</Key>
@@ -128,6 +129,10 @@
           <Key>com.sysprogs.arm.openocd.transport</Key>
           <Value />
         </KeyValue>
+        <KeyValue>
+          <Key>com.sysprogs.arm.openocd.quicksetup.interface</Key>
+          <Value>stlink-v2-1</Value>
+        </KeyValue>
       </Entries>
     </DebugMethodProperties>
     <AutoDetectRTOS>true</AutoDetectRTOS>
@@ -157,6 +162,7 @@
     <ShowMessageAfterExecuting>true</ShowMessageAfterExecuting>
   </CustomShortcuts>
   <UserDefinedVariables />
+  <ImportedPropertySheets />
   <CodeSense>
     <Enabled>Unknown</Enabled>
     <ExtraSettings>

@@ -255,6 +255,36 @@ void led_char(char character, uint8_t dot) {
 	    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);					// F
 	    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_RESET);					// G
 	    break;
+    
+    case 'P':
+	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_SET);					// A	 _
+	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_SET);					// B	|_|
+	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_RESET);					// C	|
+	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_RESET);					// D	
+	    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);					// E
+	    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);					// F
+	    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET);					// G
+	    break;
+
+    case 'R':
+	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_RESET);					// A	
+	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);					// B	 _
+	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_RESET);					// C	|
+	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_RESET);					// D	
+	    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);					// E
+	    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);					// F
+	    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET);					// G
+	    break;
+	    
+    case '-':
+	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_RESET);					// A	 
+	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);					// B	 _
+	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_RESET);					// C	
+	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_RESET);					// D	
+	    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);					// E
+	    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);					// F
+	    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET);					// G
+	    break;
 
     default:
 	    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_RESET);					// A
@@ -280,4 +310,39 @@ void led_char(char character, uint8_t dot) {
         HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);                  // LOWER DOT
         HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_RESET);                  // UPPER DOT
     }
+}
+
+
+void display_angle(int16_t angle, char suffix, DigitNumber digit)
+{
+	char display_caracter;
+	select_digit(digit);
+	if (angle < 0)
+	{
+		display_caracter = '-';
+		digit = -1;
+	}
+	switch (digit)
+	{
+	case DIGIT_1:
+		// first symbol:
+		display_caracter = '0' + (((uint32_t) angle) / 100);
+		break;
+	case DIGIT_2:
+		//second symbol:
+		display_caracter = '0' + ((((uint32_t) angle) / 10) % 10);
+		break;
+	case DIGIT_3:
+		//thrird sybmol:
+		display_caracter = '0' + (((uint32_t)(angle)) % 10);
+		break;
+	case DIGIT_4:
+		//unit symbol
+		display_caracter = suffix;
+		break;
+	default:
+		break;		
+	}
+	
+	led_char(display_caracter, 0);
 }

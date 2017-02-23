@@ -61,4 +61,6 @@ void display_temperature(float temperature, DisplayUnits units, DigitNumber digi
  */
 void gpio_led_init(void);
 
+void display_angle(int16_t angle, char suffix, DigitNumber digit);
+
 #endif // !DISPLAY_H
