@@ -30,7 +30,7 @@ int main(void)
 	init_timers();
 	gpio_led_init();
 		
-	while (1){
+	while (1) {
 		if (timer2_flag == 1)
 		{
 			timer2_flag = 0;

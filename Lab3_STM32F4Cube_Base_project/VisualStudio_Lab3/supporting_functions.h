@@ -24,6 +24,6 @@
 #define ADC_MULTIMODE_FAIL		((uint16_t) 4)
 #define EXTI_SPI1_FAIL				((uint16_t) 5)
 
-void Error_Handler						(uint16_t error_code);
+void Error_Handler(uint16_t error_code);
 
 #endif

@@ -25,7 +25,7 @@
  */
 typedef enum
 {
-	CELCIUS_UNITS = 0,
+	CELCIUS_UNITS   = 0,
 	FARENHEIT_UNITS
 } DisplayUnits;
 
