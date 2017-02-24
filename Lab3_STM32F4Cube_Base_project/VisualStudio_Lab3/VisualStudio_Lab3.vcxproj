@@ -137,6 +137,7 @@
     <ClCompile Include="display.c" />
     <ClCompile Include="fput_debug.c" />
     <ClCompile Include="keypad.c" />
+    <ClCompile Include="led.c" />
     <ClCompile Include="LIS3DSH.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="stm32f4xx_it.c" />
@@ -238,6 +239,7 @@
     <ClInclude Include="clock_config.h" />
     <ClInclude Include="display.h" />
     <ClInclude Include="keypad.h" />
+    <ClInclude Include="led.h" />
     <ClInclude Include="LIS3DSH.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="stm32f4xx_hal_conf.h" />

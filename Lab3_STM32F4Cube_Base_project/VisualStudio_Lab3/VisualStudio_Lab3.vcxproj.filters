@@ -272,6 +272,9 @@
     <ClCompile Include="timer.c">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="led.c">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stm32f4xx_hal_conf.h">
@@ -569,6 +572,9 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="timer.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="led.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>

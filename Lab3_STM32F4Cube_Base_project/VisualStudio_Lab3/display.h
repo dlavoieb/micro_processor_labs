@@ -2,23 +2,28 @@
 
 #ifndef DISPLAY_H
 #define DISPLAY_H
-
-/* 7-SEGMENTS DISPLAY TO STM32F4XX PIN REFERENCE
- *
- *	PIN 14 = PIN D 11			// A
- *	PIN 16 = PIN D 10			// B
- *	PIN 13 = PIN D  9			// C
- *	PIN  3 = PIN D  8			// D
- *	PIN  5 = PIN B 15			// E
- *	PIN 11 = PIN B 14			// F
- *	PIN 15 = PIN B 13 			// G
- *	PIN  7 = PIN B 12			// LOWER DOT
- *	PIN 10 = PIN B 11			// UPPER DOT
- *	PIN  1 = PIN E 12			// Digit 1 Selector (Inverted)
- *	PIN  2 = PIN E 13			// Digit 2 Selector (Inverted)
- *	PIN  6 = PIN E 14			// Digit 3 Selector (Inverted)
- *	PIN  8 = PIN E 15			// Digit 4 Selector (Inverted)
- */
+/** @defgroup Seven_Segment_Display 
+  *
+  * @brief Hardware driver for the 7-segment display
+  * 
+  * 7-SEGMENTS DISPLAY TO STM32F4XX PIN REFERENCE
+  *<pre>
+  *	PIN 14 = PIN D 11			// A 
+  *	PIN 16 = PIN D 10			// B 
+  *	PIN 13 = PIN D  9			// C 
+  *	PIN  3 = PIN D  8			// D 
+  *	PIN  5 = PIN B 15			// E 
+  *	PIN 11 = PIN B 14			// F 
+  *	PIN 15 = PIN B 13 			// G 
+  *	PIN  7 = PIN B 12			// LOWER DOT 
+  *	PIN 10 = PIN B 11			// UPPER DOT 
+  *	PIN  1 = PIN E 12			// Digit 1 Selector (Inverted) 
+  *	PIN  2 = PIN E 13			// Digit 2 Selector (Inverted) 
+  *	PIN  6 = PIN E 14			// Digit 3 Selector (Inverted) 
+  *	PIN  8 = PIN E 15			// Digit 4 Selector (Inverted) 
+  * </pre>
+  * @{
+  */
 
 /**
  * @brief Unit type for display
@@ -62,5 +67,9 @@ void display_temperature(float temperature, DisplayUnits units, DigitNumber digi
 void gpio_led_init(void);
 
 void display_angle(int16_t angle, char suffix, DigitNumber digit);
+
+/**
+  * @}
+  */
 
 #endif // !DISPLAY_H

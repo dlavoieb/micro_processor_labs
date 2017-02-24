@@ -6,10 +6,12 @@
 #include "main.h"
 #include "timer.h"
 #include "display.h"
+#include "led.h"
 
 extern uint8_t keypress_flag;
 extern uint8_t timer2_flag;
 extern uint8_t display_timer_flag;
+uint8_t button_flag;
 
 uint16_t read_char;
 int16_t target_pitch;
@@ -21,6 +23,7 @@ int16_t display_value;
 DigitNumber digit;
 char c;
 char suffix;
+uint8_t intensity = 0;
 
 int main(void)
 {	
@@ -29,7 +32,8 @@ int main(void)
 	keypad_init();
 	init_timers();
 	gpio_led_init();
-		
+	init_pwm_led();
+
 	while (1){
 		if (timer2_flag == 1)
 		{
@@ -144,6 +148,13 @@ int main(void)
 			
 			keypress_flag = 0;	
 		}
+		
+		if (button_flag > 1)
+		{
+			button_flag = 0;
+			intensity = (intensity + 1 ) % 100;
+			set_duty_cycle_percent(intensity, LED_GREEN);
+		}
 	}
 }
 
@@ -151,4 +162,5 @@ void SysTick_Handler(void)
 {
 	HAL_IncTick();
 	display_timer_flag = 1;
+	button_flag++;
 }
