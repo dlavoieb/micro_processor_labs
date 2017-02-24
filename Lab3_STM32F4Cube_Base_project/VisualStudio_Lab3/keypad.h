@@ -1,13 +1,21 @@
 #ifndef KEYPAD_H_
 #define KEYPAD_H_
-/*
+/** @defgroup Keypad  
+ * @brief Driver for keypad
+ *
  * Keypad pin mappings
+ * <pre>
+ * PIN1 -->	PC6
+ * PIN2 -->	PC7
+ * PIN3 -->	PC8
+ * PIN4 -->	PC9
+ * PIN5 -->	PB6
+ * PIN6 -->	PB7
+ * PIN7 -->	PB8
+ * PIN8 -->	PB9
+ * </pre>
  *
- *
- *
- *
- *
- *
+ * @{
  *
  */
 
@@ -28,4 +36,7 @@ void keypad_init(void);
  */
 int keypad_read_char(char * c);
 
+/**
+  * @}
+  */
 #endif // !KEYPAD_H_
