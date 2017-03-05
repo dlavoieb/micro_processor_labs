@@ -8,9 +8,13 @@
 
 #ifndef ACCELEROMETER_H_
 #define ACCELEROMETER_H_
+#define ACC_BUFFER_LEN 3
 
 #include "LIS3DSH.h"
 #include "stm32f4xx_hal.h"
+
+float accelerometer_data_buffer[ACC_BUFFER_LEN];
+
 
 /**
  * @author	Malcolm Watt
@@ -20,11 +24,13 @@
  */
 void accelerometer_init(void);
 
+
 /**
  * @author	Malcolm Watt
  * @brief	Interrupt handler on external line 0 for the accelerometer.
  */
 void EXTI0_IRQHandler(void);
+
 
 /**
  * @author	Malcolm Watt
@@ -34,6 +40,7 @@ void EXTI0_IRQHandler(void);
  */
 void sensor_config(void);
 
+
 /**
  * @author	Malcolm Watt
  * @brief	Configure the generation of interupts by the accelerometer.
@@ -42,11 +49,13 @@ void sensor_config(void);
  */
 void interrupt_generation_config(void);
 
+
 /**
  * @author	Malcolm Watt
  * @brief	Set up the hardwired E0 GPIO for interupts. Explicitly reset the conflicting A0 GPIO.
  */
 void interrupt_GPIO_config(void);
+
 
 /**
  * @author	Malcolm Watt

@@ -7,6 +7,7 @@
 #include "timer.h"
 #include "display.h"
 #include "led.h"
+#include "accelerometer.h"
 
 extern uint8_t keypress_flag;
 extern uint8_t timer2_flag;
@@ -33,6 +34,7 @@ int main(void)
 	init_timers();
 	gpio_led_init();
 	init_pwm_led();
+	accelerometer_init();
 
 	while (1){
 		if (timer2_flag == 1)

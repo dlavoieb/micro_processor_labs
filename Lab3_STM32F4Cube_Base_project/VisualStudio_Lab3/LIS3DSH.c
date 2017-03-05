@@ -340,16 +340,16 @@ void LIS3DSH_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead)
   */
 void LIS3DSH_ReadACC(float* out)
 {
-  uint8_t buffer[6];
-  uint8_t ctrl, i = 0x00;
+    uint8_t buffer[6];
+    uint8_t ctrl, i = 0x00;
 	uint8_t offsetX, offsetY, offsetZ;
 	int16_t aggregateResult = 0;
 
-  LIS3DSH_Read(&offsetX, LIS3DSH_OFF_X, 1);
-  LIS3DSH_Read(&offsetY, LIS3DSH_OFF_Y, 1);
-  LIS3DSH_Read(&offsetZ, LIS3DSH_OFF_Z, 1);
+    LIS3DSH_Read(&offsetX, LIS3DSH_OFF_X, 1);
+    LIS3DSH_Read(&offsetY, LIS3DSH_OFF_Y, 1);
+    LIS3DSH_Read(&offsetZ, LIS3DSH_OFF_Z, 1);
 
-  LIS3DSH_Read(&ctrl, LIS3DSH_CTRL_REG5, 1);
+    LIS3DSH_Read(&ctrl, LIS3DSH_CTRL_REG5, 1);
 	LIS3DSH_Read(&buffer[0], LIS3DSH_OUT_X_L, 1);
 	LIS3DSH_Read(&buffer[1], LIS3DSH_OUT_X_H, 1);
 	LIS3DSH_Read(&buffer[2], LIS3DSH_OUT_Y_L, 1);

@@ -8,6 +8,7 @@
 
 #include "accelerometer.h"
 
+
 void accelerometer_init(void)
 {
 	// Sets the data rate for the accelerometer.
@@ -27,10 +28,16 @@ void accelerometer_init(void)
 	enable_accelerometer_interrupt();
 }
 
+
 void EXTI0_IRQHandler(void)
 {
-Nu	int placeholder = 0;
+	// Clear the interrupt pin.
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
+	
+	// Read out the values from the accelerometer.
+	LIS3DSH_ReadACC(&accelerometer_data_buffer[0]);
 }
+
 
 void sensor_config(void)
 {
@@ -46,14 +53,17 @@ void sensor_config(void)
 	// Enable all three axes of the accelerometer since they are all required for angle determination.
 	LIS3DSH_InitStruct.Axes_Enable = LIS3DSH_XYZ_ENABLE;
 
-	// The following are settings that are slightly arbitrary.
-	LIS3DSH_InitStruct.AA_Filter_BW = LIS3DSH_AA_BW_800;
+	// Using a 2G ceiling gives us better sensitivity which is desireable for our application.
 	LIS3DSH_InitStruct.Full_Scale = LIS3DSH_FULLSCALE_2;
+	
+	// The following two settings are slightly arbitrary.
+	LIS3DSH_InitStruct.AA_Filter_BW = LIS3DSH_AA_BW_800;
 	LIS3DSH_InitStruct.Self_Test = LIS3DSH_SELFTEST_NORMAL;
 
 	// Call the configuration function for the accelerometer.
 	LIS3DSH_Init(&LIS3DSH_InitStruct);
 }
+
 
 void interrupt_generation_config(void)
 {
@@ -72,6 +82,7 @@ void interrupt_generation_config(void)
 	// Call the configuration function for the interupts.
 	LIS3DSH_DataReadyInterruptConfig(&LIS3DSH_InterruptConfig);
 }
+
 
 void interrupt_GPIO_config(void)
 {
