@@ -68,7 +68,7 @@
   */
 __IO uint32_t  LIS3DSHTimeout = LIS3DSH_FLAG_TIMEOUT;
 
- SPI_HandleTypeDef    SpiHandle;
+SPI_HandleTypeDef    SpiHandle;
 
 /* Read/Write command */
 #define READWRITE_CMD              ((uint8_t)0x80)
@@ -122,40 +122,41 @@ uint8_t SPI_ReceiveData(SPI_HandleTypeDef *hspi);
   */
 void LIS3DSH_Init(LIS3DSH_InitTypeDef *LIS3DSH_InitStruct)
 {
-  uint8_t ctrl = 0x00;
+	uint8_t ctrl = 0x00;
 
-  /* Configure the low level interface ---------------------------------------*/
-	  /* SPI configuration -------------------------------------------------------*/
+	  /* Configure the low level interface ---------------------------------------*/
+		  /* SPI configuration -------------------------------------------------------*/
 	__HAL_RCC_SPI1_CLK_ENABLE();
 	
-  HAL_SPI_DeInit(&SpiHandle);
-  SpiHandle.Instance 							  = SPI1;
-  SpiHandle.Init.BaudRatePrescaler 	= SPI_BAUDRATEPRESCALER_4;
-  SpiHandle.Init.Direction 					= SPI_DIRECTION_2LINES;
-  SpiHandle.Init.CLKPhase 					= SPI_PHASE_1EDGE;
-  SpiHandle.Init.CLKPolarity 				= SPI_POLARITY_LOW;
-  SpiHandle.Init.CRCCalculation			= SPI_CRCCALCULATION_DISABLED;
-  SpiHandle.Init.CRCPolynomial 			= 7;
-  SpiHandle.Init.DataSize 					= SPI_DATASIZE_8BIT;
-  SpiHandle.Init.FirstBit 					= SPI_FIRSTBIT_MSB;
-  SpiHandle.Init.NSS 								= SPI_NSS_SOFT;
-  SpiHandle.Init.TIMode 						= SPI_TIMODE_DISABLED;
-  SpiHandle.Init.Mode 							= SPI_MODE_MASTER;
-	if (HAL_SPI_Init(&SpiHandle) != HAL_OK) {printf ("ERROR: Error in initialising SPI1 \n");};
+	HAL_SPI_DeInit(&SpiHandle);
+	SpiHandle.Instance 							  = SPI1;
+	SpiHandle.Init.BaudRatePrescaler 	= SPI_BAUDRATEPRESCALER_4;
+	SpiHandle.Init.Direction 					= SPI_DIRECTION_2LINES;
+	SpiHandle.Init.CLKPhase 					= SPI_PHASE_1EDGE;
+	SpiHandle.Init.CLKPolarity 				= SPI_POLARITY_LOW;
+	SpiHandle.Init.CRCCalculation			= SPI_CRCCALCULATION_DISABLED;
+	SpiHandle.Init.CRCPolynomial 			= 7;
+	SpiHandle.Init.DataSize 					= SPI_DATASIZE_8BIT;
+	SpiHandle.Init.FirstBit 					= SPI_FIRSTBIT_MSB;
+	SpiHandle.Init.NSS 								= SPI_NSS_SOFT;
+	SpiHandle.Init.TIMode 						= SPI_TIMODE_DISABLED;
+	SpiHandle.Init.Mode 							= SPI_MODE_MASTER;
+	if (HAL_SPI_Init(&SpiHandle) != HAL_OK) {printf("ERROR: Error in initialising SPI1 \n"); }
+	;
   
 	__HAL_SPI_ENABLE(&SpiHandle);
   
 	/* Configure MEMS: data rate, update mode and axes */
-  ctrl = (uint8_t) (LIS3DSH_InitStruct->Power_Mode_Output_DataRate | \
-										LIS3DSH_InitStruct->Continous_Update           | \
-										LIS3DSH_InitStruct->Axes_Enable);
+	ctrl = (uint8_t)(LIS3DSH_InitStruct->Power_Mode_Output_DataRate | \
+										  LIS3DSH_InitStruct->Continous_Update           | \
+										  LIS3DSH_InitStruct->Axes_Enable);
 
 
-  /* Write value to MEMS CTRL_REG4 regsister */
-  LIS3DSH_Write(&ctrl, LIS3DSH_CTRL_REG4, 1);
+										    /* Write value to MEMS CTRL_REG4 regsister */
+	LIS3DSH_Write(&ctrl, LIS3DSH_CTRL_REG4, 1);
 
-	/* Configure MEMS: Anti-aliasing filter, full scale, self test  */
-	ctrl = (uint8_t) (LIS3DSH_InitStruct->AA_Filter_BW | \
+		/* Configure MEMS: Anti-aliasing filter, full scale, self test  */
+	ctrl = (uint8_t)(LIS3DSH_InitStruct->AA_Filter_BW | \
 										LIS3DSH_InitStruct->Full_Scale   | \
 										LIS3DSH_InitStruct->Self_Test);
 
@@ -171,18 +172,18 @@ void LIS3DSH_Init(LIS3DSH_InitTypeDef *LIS3DSH_InitStruct)
   */
 void LIS3DSH_DataReadyInterruptConfig(LIS3DSH_DRYInterruptConfigTypeDef *LIS3DSH_IntConfigStruct)
 {
-  uint8_t ctrl = 0x00;
+	uint8_t ctrl = 0x00;
 
-  /* Read CLICK_CFG register */
-  LIS3DSH_Read(&ctrl, LIS3DSH_CTRL_REG3, 1);
+	  /* Read CLICK_CFG register */
+	LIS3DSH_Read(&ctrl, LIS3DSH_CTRL_REG3, 1);
 
-  /* Configure latch Interrupt request, click interrupts and double click interrupts */
-  ctrl = (uint8_t)(LIS3DSH_IntConfigStruct->Dataready_Interrupt| \
-                   LIS3DSH_IntConfigStruct->Interrupt_signal | \
-                   LIS3DSH_IntConfigStruct->Interrupt_type);
+	  /* Configure latch Interrupt request, click interrupts and double click interrupts */
+	ctrl = (uint8_t)(LIS3DSH_IntConfigStruct->Dataready_Interrupt | \
+	                 LIS3DSH_IntConfigStruct->Interrupt_signal | \
+	                 LIS3DSH_IntConfigStruct->Interrupt_type);
 
-  /* Write value to MEMS CLICK_CFG register */
-  LIS3DSH_Write(&ctrl, LIS3DSH_CTRL_REG3, 1);
+	                   /* Write value to MEMS CLICK_CFG register */
+	LIS3DSH_Write(&ctrl, LIS3DSH_CTRL_REG3, 1);
 }
 
 /**
@@ -191,17 +192,17 @@ void LIS3DSH_DataReadyInterruptConfig(LIS3DSH_DRYInterruptConfigTypeDef *LIS3DSH
   */
 void LIS3DSH_LowpowerCmd(void)
 {
-  uint8_t tmpreg;
+	uint8_t tmpreg;
 
-  /* Read CTRL_REG1 register */
-  LIS3DSH_Read(&tmpreg, LIS3DSH_CTRL_REG4, 1);
+	  /* Read CTRL_REG1 register */
+	LIS3DSH_Read(&tmpreg, LIS3DSH_CTRL_REG4, 1);
 
-  /* Set new low power mode configuration */
-  tmpreg &= (uint8_t)0x0F;
-  tmpreg |= LIS3DSH_PWRDWN;
+	  /* Set new low power mode configuration */
+	tmpreg &= (uint8_t)0x0F;
+	tmpreg |= LIS3DSH_PWRDWN;
 
-  /* Write value to MEMS CTRL_REG1 regsister */
-  LIS3DSH_Write(&tmpreg, LIS3DSH_CTRL_REG4, 1);
+	  /* Write value to MEMS CTRL_REG1 regsister */
+	LIS3DSH_Write(&tmpreg, LIS3DSH_CTRL_REG4, 1);
 }
 
 /**
@@ -223,17 +224,17 @@ void LIS3DSH_LowpowerCmd(void)
   */
 void LIS3DSH_DataRateCmd(uint8_t DataRateValue)
 {
-  uint8_t tmpreg;
+	uint8_t tmpreg;
 
-  /* Read CTRL_REG1 register */
-  LIS3DSH_Read(&tmpreg, LIS3DSH_CTRL_REG4, 1);
+	  /* Read CTRL_REG1 register */
+	LIS3DSH_Read(&tmpreg, LIS3DSH_CTRL_REG4, 1);
 
-  /* Set new Data rate configuration */
-  tmpreg &= (uint8_t)0x0F;
-  tmpreg |= DataRateValue;
+	  /* Set new Data rate configuration */
+	tmpreg &= (uint8_t)0x0F;
+	tmpreg |= DataRateValue;
 
-  /* Write value to MEMS CTRL_REG1 regsister */
-  LIS3DSH_Write(&tmpreg, LIS3DSH_CTRL_REG4, 1);
+	  /* Write value to MEMS CTRL_REG1 regsister */
+	LIS3DSH_Write(&tmpreg, LIS3DSH_CTRL_REG4, 1);
 }
 
 /**
@@ -249,17 +250,17 @@ void LIS3DSH_DataRateCmd(uint8_t DataRateValue)
   */
 void LIS3DSH_FullScaleCmd(uint8_t FS_value)
 {
-  uint8_t tmpreg;
+	uint8_t tmpreg;
 
-  /* Read CTRL_REG1 register */
-  LIS3DSH_Read(&tmpreg, LIS3DSH_CTRL_REG5, 1);
+	  /* Read CTRL_REG1 register */
+	LIS3DSH_Read(&tmpreg, LIS3DSH_CTRL_REG5, 1);
 
-  /* Set new full scale configuration */
-  tmpreg &= (uint8_t)0xC7;
-  tmpreg |= FS_value;
+	  /* Set new full scale configuration */
+	tmpreg &= (uint8_t)0xC7;
+	tmpreg |= FS_value;
 
-  /* Write value to MEMS CTRL_REG1 regsister */
-  LIS3DSH_Write(&tmpreg, LIS3DSH_CTRL_REG5, 1);
+	  /* Write value to MEMS CTRL_REG1 regsister */
+	LIS3DSH_Write(&tmpreg, LIS3DSH_CTRL_REG5, 1);
 }
 
 /**
@@ -275,25 +276,25 @@ void LIS3DSH_Write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite)
        - When 0, the address will remain unchanged in multiple read/write commands.
        - When 1, the address will be auto incremented in multiple read/write commands.
   */
-  if(NumByteToWrite > 0x01)
-  {
-    WriteAddr |= (uint8_t)MULTIPLEBYTE_CMD;
-  }
-  /* Set chip select Low at the start of the transmission */
-  LIS3DSH_CS_LOW();
+	if (NumByteToWrite > 0x01)
+	{
+		WriteAddr |= (uint8_t)MULTIPLEBYTE_CMD;
+	}
+	/* Set chip select Low at the start of the transmission */
+	LIS3DSH_CS_LOW();
 
-  /* Send the Address of the indexed register */
-  LIS3DSH_SendByte(WriteAddr);
-  /* Send the data that will be written into the device (MSB First) */
-  while(NumByteToWrite >= 0x01)
-  {
-    LIS3DSH_SendByte(*pBuffer);
-    NumByteToWrite--;
-    pBuffer++;
-  }
+	  /* Send the Address of the indexed register */
+	LIS3DSH_SendByte(WriteAddr);
+	/* Send the data that will be written into the device (MSB First) */
+	while (NumByteToWrite >= 0x01)
+	{
+		LIS3DSH_SendByte(*pBuffer);
+		NumByteToWrite--;
+		pBuffer++;
+	}
 
-  /* Set chip select High at the end of the transmission */
-  LIS3DSH_CS_HIGH();
+	  /* Set chip select High at the end of the transmission */
+	LIS3DSH_CS_HIGH();
 }
 
 /**
@@ -305,31 +306,31 @@ void LIS3DSH_Write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite)
   */
 void LIS3DSH_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead)
 {
-  if(NumByteToRead > 0x01)
-  {
-    ReadAddr |= (uint8_t)(READWRITE_CMD | MULTIPLEBYTE_CMD);
-  }
-  else
-  {
-    ReadAddr |= (uint8_t)READWRITE_CMD;
-  }
-  /* Set chip select Low at the start of the transmission */
-  LIS3DSH_CS_LOW();
+	if (NumByteToRead > 0x01)
+	{
+		ReadAddr |= (uint8_t)(READWRITE_CMD | MULTIPLEBYTE_CMD);
+	}
+	else
+	{
+		ReadAddr |= (uint8_t)READWRITE_CMD;
+	}
+	/* Set chip select Low at the start of the transmission */
+	LIS3DSH_CS_LOW();
 
-  /* Send the Address of the indexed register */
-  LIS3DSH_SendByte(ReadAddr);
+	  /* Send the Address of the indexed register */
+	LIS3DSH_SendByte(ReadAddr);
 
-  /* Receive the data that will be read from the device (MSB First) */
-  while(NumByteToRead > 0x00)
-  {
-    /* Send dummy byte (0x00) to generate the SPI clock to LIS3DSH (Slave device) */
-    *pBuffer = LIS3DSH_SendByte(DUMMY_BYTE);
-    NumByteToRead--;
-    pBuffer++;
-  }
+	  /* Receive the data that will be read from the device (MSB First) */
+	while (NumByteToRead > 0x00)
+	{
+	  /* Send dummy byte (0x00) to generate the SPI clock to LIS3DSH (Slave device) */
+		*pBuffer = LIS3DSH_SendByte(DUMMY_BYTE);
+		NumByteToRead--;
+		pBuffer++;
+	}
 
-  /* Set chip select High at the end of the transmission */
-  LIS3DSH_CS_HIGH();
+	  /* Set chip select High at the end of the transmission */
+	LIS3DSH_CS_HIGH();
 }
 
 /**
@@ -340,16 +341,16 @@ void LIS3DSH_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead)
   */
 void LIS3DSH_ReadACC(float* out)
 {
-  uint8_t buffer[6];
-  uint8_t ctrl, i = 0x00;
+	uint8_t buffer[6];
+	uint8_t ctrl, i = 0x00;
 	uint8_t offsetX, offsetY, offsetZ;
 	int16_t aggregateResult = 0;
 
-  LIS3DSH_Read(&offsetX, LIS3DSH_OFF_X, 1);
-  LIS3DSH_Read(&offsetY, LIS3DSH_OFF_Y, 1);
-  LIS3DSH_Read(&offsetZ, LIS3DSH_OFF_Z, 1);
+	LIS3DSH_Read(&offsetX, LIS3DSH_OFF_X, 1);
+	LIS3DSH_Read(&offsetY, LIS3DSH_OFF_Y, 1);
+	LIS3DSH_Read(&offsetZ, LIS3DSH_OFF_Z, 1);
 
-  LIS3DSH_Read(&ctrl, LIS3DSH_CTRL_REG5, 1);
+	LIS3DSH_Read(&ctrl, LIS3DSH_CTRL_REG5, 1);
 	LIS3DSH_Read(&buffer[0], LIS3DSH_OUT_X_L, 1);
 	LIS3DSH_Read(&buffer[1], LIS3DSH_OUT_X_H, 1);
 	LIS3DSH_Read(&buffer[2], LIS3DSH_OUT_Y_L, 1);
@@ -359,62 +360,62 @@ void LIS3DSH_ReadACC(float* out)
 
 	ctrl = (ctrl & 0x38) >> 3;
 
-  switch(ctrl)
-    {
-    /* FS bits = 000 ==> Sensitivity typical value = 0.061 milligals/digit*/
-    case 0x00:
-      for(i=0; i<0x06; i=i+2)
-      {
-				aggregateResult = (int32_t)(buffer[i] | buffer[i+1] << 8);
-        *out =(float)(LIS3DSH_SENSITIVITY_2G * (float)aggregateResult);
-        out++;
-      }
-      break;
+	switch (ctrl)
+	{
+	/* FS bits = 000 ==> Sensitivity typical value = 0.061 milligals/digit*/
+	case 0x00:
+		for (i = 0; i < 0x06; i = i + 2)
+		{
+			aggregateResult = (int32_t)(buffer[i] | buffer[i + 1] << 8);
+			*out = (float)(LIS3DSH_SENSITIVITY_2G * (float)aggregateResult);
+			out++;
+		}
+		break;
 
-    /* FS bit = 001 ==> Sensitivity typical value = 0.122 milligals/digit*/
-    case 0x01:
-      for(i=0; i<0x06; i=i+2)
-      {
-				aggregateResult = (int32_t)(buffer[i] | buffer[i+1] << 8);
-        *out =(float)(LIS3DSH_SENSITIVITY_4G * (float)aggregateResult);
-        out++;
-      }
-      break;
+		    /* FS bit = 001 ==> Sensitivity typical value = 0.122 milligals/digit*/
+	case 0x01:
+		for (i = 0; i < 0x06; i = i + 2)
+		{
+			aggregateResult = (int32_t)(buffer[i] | buffer[i + 1] << 8);
+			*out = (float)(LIS3DSH_SENSITIVITY_4G * (float)aggregateResult);
+			out++;
+		}
+		break;
 
-		/* FS bit = 010 ==> Sensitivity typical value = 0.183 milligals/digit*/
-    case 0x02:
-      for(i=0; i<0x06; i=i+2)
-      {
-				aggregateResult = (int32_t)(buffer[i] | buffer[i+1] << 8);
-        *out =(float)(LIS3DSH_SENSITIVITY_6G * (float)aggregateResult);
-        out++;
-      }
-      break;
+				/* FS bit = 010 ==> Sensitivity typical value = 0.183 milligals/digit*/
+	case 0x02:
+		for (i = 0; i < 0x06; i = i + 2)
+		{
+			aggregateResult = (int32_t)(buffer[i] | buffer[i + 1] << 8);
+			*out = (float)(LIS3DSH_SENSITIVITY_6G * (float)aggregateResult);
+			out++;
+		}
+		break;
 
-		 /* FS bit = 011 ==> Sensitivity typical value = 0.244 milligals/digit*/
-    case 0x03:
-      for(i=0; i<0x06; i=i+2)
-      {
-				aggregateResult = (int32_t)(buffer[i] | buffer[i+1] << 8);
-        *out =(float)(LIS3DSH_SENSITIVITY_8G * (float)aggregateResult);
-        out++;
-      }
-      break;
+				 /* FS bit = 011 ==> Sensitivity typical value = 0.244 milligals/digit*/
+	case 0x03:
+		for (i = 0; i < 0x06; i = i + 2)
+		{
+			aggregateResult = (int32_t)(buffer[i] | buffer[i + 1] << 8);
+			*out = (float)(LIS3DSH_SENSITIVITY_8G * (float)aggregateResult);
+			out++;
+		}
+		break;
 
-		/* FS bit = 100 ==> Sensitivity typical value = 0.488 milligals/digit*/
-    case 0x04:
-      for(i=0; i<0x06; i=i+2)
-      {
-				aggregateResult = (int32_t)(buffer[i] | buffer[i+1] << 8);
-        *out =(float)(LIS3DSH_SENSITIVITY_16G * (float)aggregateResult);
-        out++;
-      }
-      break;
+				/* FS bit = 100 ==> Sensitivity typical value = 0.488 milligals/digit*/
+	case 0x04:
+		for (i = 0; i < 0x06; i = i + 2)
+		{
+			aggregateResult = (int32_t)(buffer[i] | buffer[i + 1] << 8);
+			*out = (float)(LIS3DSH_SENSITIVITY_16G * (float)aggregateResult);
+			out++;
+		}
+		break;
 
-    default:
-      break;
-    }
- }
+	default:
+		break;
+	}
+}
 
 /**
   * @brief  Sends a Byte through the SPI interface and return the Byte received
@@ -425,26 +426,26 @@ void LIS3DSH_ReadACC(float* out)
 static uint8_t LIS3DSH_SendByte(uint8_t byte)
 {
   /* Loop while DR register in not empty */
-  LIS3DSHTimeout = LIS3DSH_FLAG_TIMEOUT;
-  while (__HAL_SPI_GET_FLAG(&SpiHandle, SPI_FLAG_TXE) == RESET)
-  {
-    if((LIS3DSHTimeout--) == 0) return LIS3DSH_TIMEOUT_UserCallback();
-  }
+	LIS3DSHTimeout = LIS3DSH_FLAG_TIMEOUT;
+	while (__HAL_SPI_GET_FLAG(&SpiHandle, SPI_FLAG_TXE) == RESET)
+	{
+		if ((LIS3DSHTimeout--) == 0) return LIS3DSH_TIMEOUT_UserCallback();
+	}
 
-  /* Send a Byte through the SPI peripheral */
-  SPI_SendData(&SpiHandle,  byte);
+	  /* Send a Byte through the SPI peripheral */
+	SPI_SendData(&SpiHandle, byte);
 
-  /* Wait to receive a Byte */
-  LIS3DSHTimeout = LIS3DSH_FLAG_TIMEOUT;
-  while (__HAL_SPI_GET_FLAG(&SpiHandle, SPI_FLAG_RXNE) == RESET)
-  {
-    if((LIS3DSHTimeout--) == 0) {
+	  /* Wait to receive a Byte */
+	LIS3DSHTimeout = LIS3DSH_FLAG_TIMEOUT;
+	while (__HAL_SPI_GET_FLAG(&SpiHandle, SPI_FLAG_RXNE) == RESET)
+	{
+		if ((LIS3DSHTimeout--) == 0) {
 			return LIS3DSH_TIMEOUT_UserCallback();
 		}
-  }
+	}
 
-  /* Return the Byte read from the SPI bus */ 
-  return SPI_ReceiveData(&SpiHandle);
+	  /* Return the Byte read from the SPI bus */ 
+	return SPI_ReceiveData(&SpiHandle);
 }
 
 
@@ -464,55 +465,55 @@ uint32_t LIS3DSH_TIMEOUT_UserCallback(void)
 }
 #endif /* USE_DEFAULT_TIMEOUT_CALLBACK */
 
-void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi){
+void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi) {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
   /* Enable the SPI periph */
-  __SPI1_CLK_ENABLE();
+	__SPI1_CLK_ENABLE();
 
-  /* Enable SCK, MOSI and MISO GPIO clocks */
-  __GPIOA_CLK_ENABLE();
+	  /* Enable SCK, MOSI and MISO GPIO clocks */
+	__GPIOA_CLK_ENABLE();
 
-  /* Enable CS, INT1, INT2  GPIO clock */
-  __GPIOE_CLK_ENABLE();
+	  /* Enable CS, INT1, INT2  GPIO clock */
+	__GPIOE_CLK_ENABLE();
 
-  //GPIO_PinAFConfig(LIS3DSH_SPI_SCK_GPIO_PORT, LIS3DSH_SPI_SCK_SOURCE, LIS3DSH_SPI_SCK_AF);
-  //GPIO_PinAFConfig(LIS3DSH_SPI_MISO_GPIO_PORT, LIS3DSH_SPI_MISO_SOURCE, LIS3DSH_SPI_MISO_AF);
-  //GPIO_PinAFConfig(LIS3DSH_SPI_MOSI_GPIO_PORT, LIS3DSH_SPI_MOSI_SOURCE, LIS3DSH_SPI_MOSI_AF);
+	  //GPIO_PinAFConfig(LIS3DSH_SPI_SCK_GPIO_PORT, LIS3DSH_SPI_SCK_SOURCE, LIS3DSH_SPI_SCK_AF);
+	  //GPIO_PinAFConfig(LIS3DSH_SPI_MISO_GPIO_PORT, LIS3DSH_SPI_MISO_SOURCE, LIS3DSH_SPI_MISO_AF);
+	  //GPIO_PinAFConfig(LIS3DSH_SPI_MOSI_GPIO_PORT, LIS3DSH_SPI_MOSI_SOURCE, LIS3DSH_SPI_MOSI_AF);
 
-  GPIO_InitStructure.Mode  = GPIO_MODE_AF_PP;
-  GPIO_InitStructure.Pull  = GPIO_PULLDOWN;
-  GPIO_InitStructure.Speed = GPIO_SPEED_MEDIUM;
-  GPIO_InitStructure.Alternate = GPIO_AF5_SPI1;
+	GPIO_InitStructure.Mode  = GPIO_MODE_AF_PP;
+	GPIO_InitStructure.Pull  = GPIO_PULLDOWN;
+	GPIO_InitStructure.Speed = GPIO_SPEED_MEDIUM;
+	GPIO_InitStructure.Alternate = GPIO_AF5_SPI1;
 
-  /* SPI SCK pin configuration */
-  GPIO_InitStructure.Pin = LIS3DSH_SPI_SCK_PIN;
-  HAL_GPIO_Init(LIS3DSH_SPI_SCK_GPIO_PORT, &GPIO_InitStructure);
+	  /* SPI SCK pin configuration */
+	GPIO_InitStructure.Pin = LIS3DSH_SPI_SCK_PIN;
+	HAL_GPIO_Init(LIS3DSH_SPI_SCK_GPIO_PORT, &GPIO_InitStructure);
 
-  /* SPI  MOSI pin configuration */
-  GPIO_InitStructure.Pin =  LIS3DSH_SPI_MOSI_PIN;
-  HAL_GPIO_Init(LIS3DSH_SPI_MOSI_GPIO_PORT, &GPIO_InitStructure);
+	  /* SPI  MOSI pin configuration */
+	GPIO_InitStructure.Pin =  LIS3DSH_SPI_MOSI_PIN;
+	HAL_GPIO_Init(LIS3DSH_SPI_MOSI_GPIO_PORT, &GPIO_InitStructure);
 
-  /* SPI MISO pin configuration */
-  GPIO_InitStructure.Pin = LIS3DSH_SPI_MISO_PIN;
-  HAL_GPIO_Init(LIS3DSH_SPI_MISO_GPIO_PORT, &GPIO_InitStructure);
+	  /* SPI MISO pin configuration */
+	GPIO_InitStructure.Pin = LIS3DSH_SPI_MISO_PIN;
+	HAL_GPIO_Init(LIS3DSH_SPI_MISO_GPIO_PORT, &GPIO_InitStructure);
 	
 	GPIO_InitStructure.Pin   = LIS3DSH_SPI_CS_PIN;
-  GPIO_InitStructure.Mode  = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_MEDIUM;
-  HAL_GPIO_Init(LIS3DSH_SPI_CS_GPIO_PORT, &GPIO_InitStructure);
+	GPIO_InitStructure.Mode  = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	HAL_GPIO_Init(LIS3DSH_SPI_CS_GPIO_PORT, &GPIO_InitStructure);
 
-  /* Deselect : Chip Select high */
-  HAL_GPIO_WritePin(LIS3DSH_SPI_CS_GPIO_PORT, LIS3DSH_SPI_CS_PIN, GPIO_PIN_SET);
+	  /* Deselect : Chip Select high */
+	HAL_GPIO_WritePin(LIS3DSH_SPI_CS_GPIO_PORT, LIS3DSH_SPI_CS_PIN, GPIO_PIN_SET);
 
-  /* Configure GPIO PINs to detect Interrupts */
-  GPIO_InitStructure.Pin   = LIS3DSH_SPI_INT1_PIN;
-  GPIO_InitStructure.Mode  = GPIO_MODE_IT_FALLING;
-  GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_MEDIUM;
-  HAL_GPIO_Init(LIS3DSH_SPI_INT1_GPIO_PORT, &GPIO_InitStructure);
+	  /* Configure GPIO PINs to detect Interrupts */
+	GPIO_InitStructure.Pin   = LIS3DSH_SPI_INT1_PIN;
+	GPIO_InitStructure.Mode  = GPIO_MODE_IT_FALLING;
+	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	HAL_GPIO_Init(LIS3DSH_SPI_INT1_GPIO_PORT, &GPIO_InitStructure);
 
-  GPIO_InitStructure.Pin = LIS3DSH_SPI_INT2_PIN;
-  HAL_GPIO_Init(LIS3DSH_SPI_INT2_GPIO_PORT, &GPIO_InitStructure);
+	GPIO_InitStructure.Pin = LIS3DSH_SPI_INT2_PIN;
+	HAL_GPIO_Init(LIS3DSH_SPI_INT2_GPIO_PORT, &GPIO_InitStructure);
 }
 
 /**
@@ -524,7 +525,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi){
 void SPI_SendData(SPI_HandleTypeDef *hspi, uint16_t Data)
 { 
   /* Write in the DR register the data to be sent */
-  hspi->Instance->DR = Data;
+	hspi->Instance->DR = Data;
 }
 
 /**
@@ -535,7 +536,7 @@ void SPI_SendData(SPI_HandleTypeDef *hspi, uint16_t Data)
 uint8_t SPI_ReceiveData(SPI_HandleTypeDef *hspi)
 {
   /* Return the data in the DR register */
-  return hspi->Instance->DR;
+	return hspi->Instance->DR;
 }
 
 

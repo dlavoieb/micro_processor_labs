@@ -4,9 +4,9 @@
 #Use VisualGDB Project Properties dialog or modify Makefile or per-configuration .mak files instead.
 
 #VisualGDB provides BSP_ROOT and TOOLCHAIN_ROOT via environment when running Make. The line below will only be active if GNU Make is started manually.
-BSP_ROOT ?= ../../../../Users/David Lavoie-Boutin/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32
-EFP_BASE ?= ../../../../Users/David Lavoie-Boutin/AppData/Local/VisualGDB/EmbeddedEFPs
-TESTFW_BASE ?= ../../../../Users/David Lavoie-Boutin/AppData/Local/VisualGDB/TestFrameworks
+BSP_ROOT ?= $(LOCALAPPDATA)/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32
+EFP_BASE ?= $(LOCALAPPDATA)/VisualGDB/EmbeddedEFPs
+TESTFW_BASE ?= $(LOCALAPPDATA)/VisualGDB/TestFrameworks
 TOOLCHAIN_ROOT ?= C:/SysGCC/arm-eabi
 #Embedded toolchain
 CC := $(TOOLCHAIN_ROOT)/bin/arm-eabi-gcc.exe

@@ -71,7 +71,7 @@
       <Entries>
         <KeyValue>
           <Key>com.sysprogs.arm.openocd.interface</Key>
-          <Value>interface/stlink-v2-1.cfg</Value>
+          <Value>interface/stlink-v2.cfg</Value>
         </KeyValue>
         <KeyValue>
           <Key>com.sysprogs.arm.openocd.cpu</Key>
@@ -106,10 +106,6 @@
           <Value>load</Value>
         </KeyValue>
         <KeyValue>
-          <Key>com.sysprogs.arm.openocd.commands.autoprogram</Key>
-          <Value />
-        </KeyValue>
-        <KeyValue>
           <Key>com.sysprogs.arm.openocd.commands.reset</Key>
           <Value>mon reset init</Value>
         </KeyValue>
@@ -119,7 +115,7 @@
         </KeyValue>
         <KeyValue>
           <Key>com.sysprogs.arm.openocd.quicksetup.enabled</Key>
-          <Value>1</Value>
+          <Value>0</Value>
         </KeyValue>
         <KeyValue>
           <Key>com.sysprogs.arm.openocd.delay</Key>
@@ -128,10 +124,6 @@
         <KeyValue>
           <Key>com.sysprogs.arm.openocd.transport</Key>
           <Value />
-        </KeyValue>
-        <KeyValue>
-          <Key>com.sysprogs.arm.openocd.quicksetup.interface</Key>
-          <Value>stlink-v2-1</Value>
         </KeyValue>
       </Entries>
     </DebugMethodProperties>
