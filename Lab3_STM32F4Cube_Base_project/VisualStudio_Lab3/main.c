@@ -8,16 +8,18 @@
 #include "display.h"
 #include "led.h"
 
-extern uint8_t keypress_flag;
-extern uint8_t timer2_flag;
-extern uint8_t display_timer_flag;
-uint8_t button_flag;
+extern volatile uint8_t keypress_flag;
+extern volatile uint8_t timer2_flag;
+extern volatile uint8_t display_timer_flag;
+volatile uint8_t accelerometer_flag; // TODO: MAKE EXTERN
 
 uint16_t read_char;
 int16_t target_pitch;
 int16_t target_roll;
 int16_t temp_pitch;
 int16_t temp_roll;
+int16_t current_pitch;
+int16_t current_roll;
 
 int16_t display_value;
 DigitNumber digit;
@@ -34,7 +36,7 @@ int main(void)
 	gpio_led_init();
 	init_pwm_led();
 
-	while (1){
+	while (1) {
 		if (timer2_flag == 1)
 		{
 			timer2_flag = 0;
@@ -149,11 +151,20 @@ int main(void)
 			keypress_flag = 0;	
 		}
 		
-		if (button_flag > 1)
+		if (accelerometer_flag == 1)
 		{
-			button_flag = 0;
-			intensity = (intensity + 1 ) % 100;
-			set_duty_cycle_percent(intensity, LED_GREEN);
+			accelerometer_flag = 0;
+			int16_t roll_intensity = (target_roll - current_roll); //absolute difference (make relative)
+			roll_intensity = roll_intensity > 0 ? roll_intensity : -roll_intensity;
+			
+			int16_t pitch_intensity = (target_pitch - current_pitch); //absolute difference (make relative)
+			pitch_intensity = pitch_intensity > 0 ? pitch_intensity : -pitch_intensity;
+			
+			set_duty_cycle_percent(roll_intensity, LED_GREEN);
+			set_duty_cycle_percent(roll_intensity, LED_RED);
+			set_duty_cycle_percent(pitch_intensity, LED_BLUE);
+			set_duty_cycle_percent(pitch_intensity, LED_ORANGE);
+			
 		}
 	}
 }
@@ -162,5 +173,5 @@ void SysTick_Handler(void)
 {
 	HAL_IncTick();
 	display_timer_flag = 1;
-	button_flag++;
+	accelerometer_flag = 1; // todo: REMOVE ACCEL FLAG
 }
