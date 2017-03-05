@@ -1,7 +1,7 @@
 /**
  * @file	accelerometer.c
  * @author	Malcolm Watt
- * @version	0.0.1
+ * @version	0.0.2
  * @date	2017-02-24
  * @brief	Configuration and implementation of ISR for accelerometer data.
  */
@@ -19,12 +19,17 @@ void accelerometer_init(void)
 	// Configure GPIOs for interrupts.
 	interrupt_GPIO_config();
 	
-	// Configure and enable the interrupt through NVIC module.
+	// Set the priority of the Line 0 interrupt to 1 with subgroup priority of 0.
+	// Note that the keypad has a subgroup priority of 1.
 	HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
+	
+	// Clear interrupt line and enable through NVIC library call.
+	enable_accelerometer_interrupt();
 }
 
 void EXTI0_IRQHandler(void)
 {
+Nu	int placeholder = 0;
 }
 
 void sensor_config(void)
@@ -83,4 +88,11 @@ void interrupt_GPIO_config(void)
 	GPIO_InitStruct.Pull = GPIO_PULLDOWN;
 	
 	HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+}
+
+
+void enable_accelerometer_interrupt(void)
+{
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
+	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 }

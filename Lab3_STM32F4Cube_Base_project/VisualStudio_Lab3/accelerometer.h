@@ -1,7 +1,7 @@
 /**
  * @file	accelerometer.h
  * @author	Malcolm Watt
- * @version	0.0.1
+ * @version	0.0.2
  * @date	2017-02-24
  * @brief	Configuration and implementation of ISR for accelerometer data.
  */
@@ -22,7 +22,7 @@ void accelerometer_init(void);
 
 /**
  * @author	Malcolm Watt
- * @brief	Interrupt handler on external line0 for the accelerometer.
+ * @brief	Interrupt handler on external line 0 for the accelerometer.
  */
 void EXTI0_IRQHandler(void);
 
@@ -47,5 +47,11 @@ void interrupt_generation_config(void);
  * @brief	Set up the hardwired E0 GPIO for interupts. Explicitly reset the conflicting A0 GPIO.
  */
 void interrupt_GPIO_config(void);
+
+/**
+ * @author	Malcolm Watt
+ * @brief	Clear the interupt line and enable the ISQ.
+ */
+void enable_accelerometer_interrupt(void);
 
 #endif // !ACCELEROMETER_H_
