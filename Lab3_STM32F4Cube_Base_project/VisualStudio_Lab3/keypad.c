@@ -59,7 +59,7 @@ void keypad_init(void)
 	GPIO_InitStruct.Speed 		= GPIO_SPEED_LOW;
 	GPIO_InitStruct.Pull 		= GPIO_PULLDOWN;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-	HAL_NVIC_SetPriority(EXTI9_5_IRQn, 1, 0);
+	HAL_NVIC_SetPriority(EXTI9_5_IRQn, 1, 1);
 	
 	enable_keypad_interrupt();
 }
