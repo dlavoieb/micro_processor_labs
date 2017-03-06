@@ -12,7 +12,8 @@
 extern volatile uint8_t keypress_flag;
 extern volatile uint8_t timer2_flag;
 extern volatile uint8_t display_timer_flag;
-volatile uint8_t accelerometer_flag; // TODO: MAKE EXTERN
+extern volatile uint8_t accelerometer_flag;
+extern struct AccelerometerAngles accelerometer_angles;
 
 uint16_t read_char;
 int16_t target_pitch;
@@ -156,6 +157,12 @@ int main(void)
 		if (accelerometer_flag == 1)
 		{
 			accelerometer_flag = 0;
+			
+			float deg_to_rad = 360.0 / (2 * PI);
+			
+			current_roll = (int16_t) (accelerometer_angles.roll * deg_to_rad);
+			current_pitch = (int16_t) (accelerometer_angles.pitch * deg_to_rad);
+			
 			int16_t roll_intensity = (target_roll - current_roll); //absolute difference (make relative)
 			roll_intensity = roll_intensity > 0 ? roll_intensity : -roll_intensity;
 			

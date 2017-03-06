@@ -12,8 +12,14 @@
 
 #include "LIS3DSH.h"
 #include "stm32f4xx_hal.h"
+#include "arm_math.h"
+#include "math.h"
 
-float accelerometer_data_buffer[ACC_BUFFER_LEN];
+struct AccelerometerAngles
+{
+	float pitch;
+	float roll;
+} accelerometer_angles;
 
 
 /**
@@ -30,6 +36,13 @@ void accelerometer_init(void);
  * @brief	Interrupt handler on external line 0 for the accelerometer.
  */
 void EXTI0_IRQHandler(void);
+
+
+/**
+ * @author	Malcolm Watt
+ * @brief	Calculate the accelerometer angles.
+ */
+void accelerometer_angle_calculation(float * xyz_data, struct AccelerometerAngles * result);
 
 
 /**

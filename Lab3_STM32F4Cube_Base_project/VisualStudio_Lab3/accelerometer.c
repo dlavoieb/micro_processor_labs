@@ -9,6 +9,9 @@
 #include "accelerometer.h"
 
 
+uint8_t accelerometer_flag = 0;
+
+
 void accelerometer_init(void)
 {
 	// Sets the data rate for the accelerometer.
@@ -34,8 +37,16 @@ void EXTI0_IRQHandler(void)
 	// Clear the interrupt pin.
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
 	
+	float accelerometer_data_buffer[ACC_BUFFER_LEN];
+
 	// Read out the values from the accelerometer.
 	LIS3DSH_ReadACC(&accelerometer_data_buffer[0]);
+	
+	// Calculate the tilt and roll angles of the accelerometer.
+	accelerometer_angle_calculation(&accelerometer_data_buffer[0], &accelerometer_angles);
+	
+	// Set the accelerometer flag high.
+	accelerometer_flag = 1;
 }
 
 
@@ -106,4 +117,36 @@ void enable_accelerometer_interrupt(void)
 {
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
 	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+}
+
+
+void accelerometer_angle_calculation(float * xyz_data, struct AccelerometerAngles * result)
+{
+	// For readability. For clarity. For honor.
+	float x_acc = xyz_data[0];
+	float y_acc = xyz_data[1];
+	float z_acc = xyz_data[2];
+	
+	
+	// Calculate the denominator for pitch: Ay^2 + Az^2.
+	float pitch_denom_squared = y_acc * y_acc + z_acc * z_acc;
+	
+	// Get the square root of the denominator using a cmsis lib call.
+	float pitch_denominator;
+	arm_sqrt_f32(pitch_denom_squared, &pitch_denominator);
+	
+	// Calculate the pitch using arctan.
+	float temp = atan2(x_acc, pitch_denominator);
+	result->pitch = temp;
+	
+	
+	// Calculate the denominator for pitch: Ax^2 + Az^2.
+	float roll_denom_squared = x_acc * x_acc + z_acc * z_acc;
+	
+	// Get the square root of the denominator using a cmsis lib call.
+	float roll_denominator;
+	arm_sqrt_f32(roll_denom_squared, &roll_denominator);
+	
+	// Calculate the roll using arctan.
+	result->roll = atan2f(y_acc, roll_denominator);
 }
