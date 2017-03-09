@@ -168,6 +168,8 @@ int main(void)
 		if (accelerometer_flag == 1)
 		{
 			accelerometer_flag = 0;
+			process_accelerometer_sample();
+			
 			if (records >= 0)
 			{	
 				roll_buffer[records] = accelerometer_angles.roll;

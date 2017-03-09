@@ -37,6 +37,12 @@ void EXTI0_IRQHandler(void)
 	// Clear the interrupt pin.
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
 	
+	// Set the accelerometer flag high.
+	accelerometer_flag = 1;
+}
+
+void process_accelerometer_sample(void)
+{
 	float accelerometer_data_buffer[ACC_BUFFER_LEN];
 
 	// Read out the values from the accelerometer.
@@ -47,11 +53,7 @@ void EXTI0_IRQHandler(void)
 	
 	// Calculate the tilt and roll angles of the accelerometer.
 	accelerometer_angle_calculation(&accelerometer_data_buffer[0], &accelerometer_angles);
-	
-	// Set the accelerometer flag high.
-	accelerometer_flag = 1;
 }
-
 
 void sensor_config(void)
 {

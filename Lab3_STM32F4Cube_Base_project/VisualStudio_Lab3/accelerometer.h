@@ -59,6 +59,9 @@ void accelerometer_init(void);
 void EXTI0_IRQHandler(void);
 
 
+void process_accelerometer_sample(void);
+
+
 /**
  * @author	Malcolm Watt
  * @brief	Calculate the accelerometer angles.
