@@ -1,20 +1,41 @@
 /**
  * @file	accelerometer.h
  * @author	Malcolm Watt
- * @version	0.0.2
- * @date	2017-02-24
+ * @version	0.0.3
+ * @date	2017-03-09
  * @brief	Configuration and implementation of ISR for accelerometer data.
  */
 
 #ifndef ACCELEROMETER_H_
 #define ACCELEROMETER_H_
+
+// Buffer length for the accelerometer library call.
 #define ACC_BUFFER_LEN 3
+
+// Calibration values for correcting the accelerometer.
+#define ACC_CALIB_11 0.0010
+#define ACC_CALIB_21 -1.5161E-5
+#define ACC_CALIB_31 1.0938E-5
+#define ACC_CALIB_12 -1.2551E-5
+#define ACC_CALIB_22 9.7793E-4
+#define ACC_CALIB_32 -5.8278E-6
+#define ACC_CALIB_13 -9.0347E-6
+#define ACC_CALIB_23 -3.2451E-6
+#define ACC_CALIB_33 9.9294E-4
+#define ACC_CALIB_10 -0.0080
+#define ACC_CALIB_20 -0.0053
+#define ACC_CALIB_30 -0.0249
+
 
 #include "LIS3DSH.h"
 #include "stm32f4xx_hal.h"
 #include "arm_math.h"
 #include "math.h"
 
+
+/**
+ * Data structure used as a global for getting accelerometer angles in radians.
+ */
 struct AccelerometerAngles
 {
 	float pitch;
@@ -43,6 +64,14 @@ void EXTI0_IRQHandler(void);
  * @brief	Calculate the accelerometer angles.
  */
 void accelerometer_angle_calculation(float * xyz_data, struct AccelerometerAngles * result);
+
+
+/**
+ * @author	Malcolm Watt
+ * @brief	Adjust the accelerometer angles based on the calibration data.
+ * @description	Transforms the input Ax, Ay, Az into the normalized and corrected Ax1, Ay1 and Az1.
+ */
+void adjust_accelerometer_angle(float * xyz_data);
 
 
 /**
