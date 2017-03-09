@@ -40,7 +40,8 @@ struct AccelerometerAngles
 {
 	float pitch;
 	float roll;
-};
+} accelerometer_angles;
+
 
 /**
  * @author	Malcolm Watt

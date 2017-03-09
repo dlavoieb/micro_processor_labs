@@ -10,12 +10,13 @@
 #include "accelerometer.h"
 
 #define deg_to_rad 360.0 / (2 * PI)
+#define RECORD_BUFFER_SIZE 1000
 
 extern volatile uint8_t keypress_flag;
 extern volatile uint8_t timer2_flag;
 extern volatile uint8_t display_timer_flag;
 extern volatile uint8_t accelerometer_flag;
-extern struct AccelerometerAngles angle_buffer[5];
+extern struct AccelerometerAngles accelerometer_angles;
 
 uint16_t read_char;
 int16_t target_pitch;
@@ -34,6 +35,10 @@ char suffix;
 uint8_t intensity = 0;
 float total_pitch;
 float total_roll;
+
+uint16_t records;
+float roll_buffer[RECORD_BUFFER_SIZE];
+float pitch_buffer[RECORD_BUFFER_SIZE];
 
 int main(void)
 {	
@@ -162,25 +167,20 @@ int main(void)
 		
 		if (accelerometer_flag == 1)
 		{
-			total_pitch = 0;
-			total_roll = 0;
-			
-			for (int i = 0; i < 5; i++)
-			{
-				total_roll += angle_buffer[i].roll;
-				total_pitch += angle_buffer[i].pitch;
-			}
-			
 			accelerometer_flag = 0;
-			
-			current_roll = (int16_t)(total_roll * deg_to_rad / 5);
+			if (records >= 0)
+			{	
+				roll_buffer[records] = accelerometer_angles.roll;
+				pitch_buffer[records] = accelerometer_angles.pitch;
+				records++;
+			}
+			current_roll = (int16_t)(accelerometer_angles.roll * deg_to_rad);
+			current_pitch = (int16_t)(accelerometer_angles.pitch * deg_to_rad);
 			current_roll = current_roll > 0 ? current_roll : -current_roll;
-			current_pitch = (int16_t)(total_pitch * deg_to_rad / 5);
 			current_pitch = current_pitch > 0 ? current_pitch : -current_pitch;
 			
 			roll_intensity = (target_roll - current_roll); //absolute difference (make relative)
 			roll_intensity = roll_intensity > 0 ? roll_intensity : -roll_intensity;
-			
 			pitch_intensity = (target_pitch - current_pitch); //absolute difference (make relative)
 			pitch_intensity = pitch_intensity > 0 ? pitch_intensity : -pitch_intensity;
 			
@@ -189,6 +189,16 @@ int main(void)
 			set_duty_cycle_percent(roll_intensity, LED_BLUE);
 			set_duty_cycle_percent(roll_intensity, LED_ORANGE);
 			
+		}
+		
+		if (records == RECORD_BUFFER_SIZE)
+		{
+			records = -1;
+			printf("roll, pitch,\n");
+			for (int i = 0; i < RECORD_BUFFER_SIZE; i++)
+			{
+				printf("%f, %f, \n", roll_buffer[i], pitch_buffer[i]);	
+			}
 		}
 	}
 }
