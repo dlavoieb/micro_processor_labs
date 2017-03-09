@@ -10,7 +10,8 @@
 
 
 uint8_t accelerometer_flag = 0;
-
+struct AccelerometerAngles angle_buffer[5];
+uint8_t buffer_position = 0;
 
 void accelerometer_init(void)
 {
@@ -46,8 +47,11 @@ void EXTI0_IRQHandler(void)
 	adjust_accelerometer_angle(&accelerometer_data_buffer[0]);
 	
 	// Calculate the tilt and roll angles of the accelerometer.
-	accelerometer_angle_calculation(&accelerometer_data_buffer[0], &accelerometer_angles);
-	
+	accelerometer_angle_calculation(&accelerometer_data_buffer[0], &angle_buffer[buffer_position]);
+
+		// Update the position of the next entry;
+	buffer_position = (buffer_position + 1) % 5;
+
 	// Set the accelerometer flag high.
 	accelerometer_flag = 1;
 }
