@@ -1,8 +1,8 @@
 /**
  * @file	accelerometer.c
  * @author	Malcolm Watt
- * @version	0.0.2
- * @date	2017-02-24
+ * @version	0.0.3
+ * @date	2017-03-09
  * @brief	Configuration and implementation of ISR for accelerometer data.
  */
 
@@ -10,7 +10,8 @@
 
 
 uint8_t accelerometer_flag = 0;
-
+struct AccelerometerAngles angle_buffer[5];
+uint8_t buffer_position = 0;
 
 void accelerometer_init(void)
 {
@@ -42,9 +43,15 @@ void EXTI0_IRQHandler(void)
 	// Read out the values from the accelerometer.
 	LIS3DSH_ReadACC(&accelerometer_data_buffer[0]);
 	
-	// Calculate the tilt and roll angles of the accelerometer.
-	accelerometer_angle_calculation(&accelerometer_data_buffer[0], &accelerometer_angles);
+	// Transform based on calibration data.
+	adjust_accelerometer_angle(&accelerometer_data_buffer[0]);
 	
+	// Calculate the tilt and roll angles of the accelerometer.
+	accelerometer_angle_calculation(&accelerometer_data_buffer[0], &angle_buffer[buffer_position]);
+
+		// Update the position of the next entry;
+	buffer_position = (buffer_position + 1) % 5;
+
 	// Set the accelerometer flag high.
 	accelerometer_flag = 1;
 }
@@ -149,4 +156,28 @@ void accelerometer_angle_calculation(float * xyz_data, struct AccelerometerAngle
 	
 	// Calculate the roll using arctan.
 	result->roll = atan2f(y_acc, roll_denominator);
+}
+
+
+void adjust_accelerometer_angle(float * xyz_data)
+{
+	// Raw data.
+	float Ax = xyz_data[0];
+	float Ay = xyz_data[1];
+	float Az = xyz_data[2];
+	
+	/* 
+	 * Note: The following equations can be found in AN3182
+	 * "Tilt measurement using a low-g 3-axis accelerometer".
+	 */
+	
+	// Corrected and normalized data.
+	float Ax1 = ACC_CALIB_11 * Ax + ACC_CALIB_12 * Ay + ACC_CALIB_13 * Az + ACC_CALIB_10;
+	float Ay1 = ACC_CALIB_21 * Ax + ACC_CALIB_22 * Ay + ACC_CALIB_23 * Az + ACC_CALIB_20;
+	float Az1 = ACC_CALIB_31 * Ax + ACC_CALIB_32 * Ay + ACC_CALIB_33 * Az + ACC_CALIB_30;
+	
+	// Replace the raw data with the normalized values.
+	xyz_data[0] = Ax1;
+	xyz_data[1] = Ay1;
+	xyz_data[2] = Az1;
 }

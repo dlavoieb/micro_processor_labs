@@ -9,11 +9,13 @@
 #include "led.h"
 #include "accelerometer.h"
 
+#define deg_to_rad 360.0 / (2 * PI)
+
 extern volatile uint8_t keypress_flag;
 extern volatile uint8_t timer2_flag;
 extern volatile uint8_t display_timer_flag;
 extern volatile uint8_t accelerometer_flag;
-extern struct AccelerometerAngles accelerometer_angles;
+extern struct AccelerometerAngles angle_buffer[5];
 
 uint16_t read_char;
 int16_t target_pitch;
@@ -22,12 +24,16 @@ int16_t temp_pitch;
 int16_t temp_roll;
 int16_t current_pitch;
 int16_t current_roll;
+int16_t roll_intensity;
+int16_t pitch_intensity;
 
 int16_t display_value;
 DigitNumber digit;
 char c;
 char suffix;
 uint8_t intensity = 0;
+float total_pitch;
+float total_roll;
 
 int main(void)
 {	
@@ -89,8 +95,8 @@ int main(void)
 				
 			case DONE:
 				// apply new data to comparators
-				target_pitch = temp_pitch;
-				target_roll = temp_roll;
+				target_pitch = temp_pitch < 90 ? temp_pitch : 90;
+				target_roll = temp_roll < 90 ? temp_roll : 90;
 				temp_pitch = 0;
 				temp_roll = 0;
 				app_state = WAIT;
@@ -156,23 +162,32 @@ int main(void)
 		
 		if (accelerometer_flag == 1)
 		{
+			total_pitch = 0;
+			total_roll = 0;
+			
+			for (int i = 0; i < 5; i++)
+			{
+				total_roll += angle_buffer[i].roll;
+				total_pitch += angle_buffer[i].pitch;
+			}
+			
 			accelerometer_flag = 0;
 			
-			float deg_to_rad = 360.0 / (2 * PI);
+			current_roll = (int16_t)(total_roll * deg_to_rad / 5);
+			current_roll = current_roll > 0 ? current_roll : -current_roll;
+			current_pitch = (int16_t)(total_pitch * deg_to_rad / 5);
+			current_pitch = current_pitch > 0 ? current_pitch : -current_pitch;
 			
-			current_roll = (int16_t) (accelerometer_angles.roll * deg_to_rad);
-			current_pitch = (int16_t) (accelerometer_angles.pitch * deg_to_rad);
-			
-			int16_t roll_intensity = (target_roll - current_roll); //absolute difference (make relative)
+			roll_intensity = (target_roll - current_roll); //absolute difference (make relative)
 			roll_intensity = roll_intensity > 0 ? roll_intensity : -roll_intensity;
 			
-			int16_t pitch_intensity = (target_pitch - current_pitch); //absolute difference (make relative)
+			pitch_intensity = (target_pitch - current_pitch); //absolute difference (make relative)
 			pitch_intensity = pitch_intensity > 0 ? pitch_intensity : -pitch_intensity;
 			
-			set_duty_cycle_percent(roll_intensity, LED_GREEN);
-			set_duty_cycle_percent(roll_intensity, LED_RED);
-			set_duty_cycle_percent(pitch_intensity, LED_BLUE);
-			set_duty_cycle_percent(pitch_intensity, LED_ORANGE);
+			set_duty_cycle_percent(pitch_intensity, LED_GREEN);
+			set_duty_cycle_percent(pitch_intensity, LED_RED);
+			set_duty_cycle_percent(roll_intensity, LED_BLUE);
+			set_duty_cycle_percent(roll_intensity, LED_ORANGE);
 			
 		}
 	}
@@ -182,5 +197,4 @@ void SysTick_Handler(void)
 {
 	HAL_IncTick();
 	display_timer_flag = 1;
-	accelerometer_flag = 1; // todo: REMOVE ACCEL FLAG
 }
