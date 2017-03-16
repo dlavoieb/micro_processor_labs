@@ -1,0 +1,17 @@
+﻿  stm32f4xx_hal_spi.c
+  Linking ../VisualGDB/Debug/Lab4...
+  c:/sysgcc/arm-eabi/bin/../lib/gcc/arm-eabi/6.2.0/../../../../arm-eabi/lib/thumb/fpu/cortex_m4\libc_nano.a(lib_a-sbrkr.o): In function `_sbrk_r':
+q:\gnu\newlib-nano\build-2016q3\arm-eabi\thumb\fpu\cortex_m4\newlib\libc\reent\..\..\..\..\..\..\..\..\newlib-nano-2016q3\newlib\libc\reent\sbrkr.c(58): error : undefined reference to `_sbrk'
+  c:/sysgcc/arm-eabi/bin/../lib/gcc/arm-eabi/6.2.0/../../../../arm-eabi/lib/thumb/fpu/cortex_m4\libc_nano.a(lib_a-writer.o): In function `_write_r':
+q:\gnu\newlib-nano\build-2016q3\arm-eabi\thumb\fpu\cortex_m4\newlib\libc\reent\..\..\..\..\..\..\..\..\newlib-nano-2016q3\newlib\libc\reent\writer.c(58): error : undefined reference to `_write'
+  c:/sysgcc/arm-eabi/bin/../lib/gcc/arm-eabi/6.2.0/../../../../arm-eabi/lib/thumb/fpu/cortex_m4\libc_nano.a(lib_a-closer.o): In function `_close_r':
+q:\gnu\newlib-nano\build-2016q3\arm-eabi\thumb\fpu\cortex_m4\newlib\libc\reent\..\..\..\..\..\..\..\..\newlib-nano-2016q3\newlib\libc\reent\closer.c(53): error : undefined reference to `_close'
+  c:/sysgcc/arm-eabi/bin/../lib/gcc/arm-eabi/6.2.0/../../../../arm-eabi/lib/thumb/fpu/cortex_m4\libc_nano.a(lib_a-fstatr.o): In function `_fstat_r':
+q:\gnu\newlib-nano\build-2016q3\arm-eabi\thumb\fpu\cortex_m4\newlib\libc\reent\..\..\..\..\..\..\..\..\newlib-nano-2016q3\newlib\libc\reent\fstatr.c(62): error : undefined reference to `_fstat'
+  c:/sysgcc/arm-eabi/bin/../lib/gcc/arm-eabi/6.2.0/../../../../arm-eabi/lib/thumb/fpu/cortex_m4\libc_nano.a(lib_a-isattyr.o): In function `_isatty_r':
+q:\gnu\newlib-nano\build-2016q3\arm-eabi\thumb\fpu\cortex_m4\newlib\libc\reent\..\..\..\..\..\..\..\..\newlib-nano-2016q3\newlib\libc\reent\isattyr.c(58): error : undefined reference to `_isatty'
+  c:/sysgcc/arm-eabi/bin/../lib/gcc/arm-eabi/6.2.0/../../../../arm-eabi/lib/thumb/fpu/cortex_m4\libc_nano.a(lib_a-lseekr.o): In function `_lseek_r':
+q:\gnu\newlib-nano\build-2016q3\arm-eabi\thumb\fpu\cortex_m4\newlib\libc\reent\..\..\..\..\..\..\..\..\newlib-nano-2016q3\newlib\libc\reent\lseekr.c(58): error : undefined reference to `_lseek'
+  c:/sysgcc/arm-eabi/bin/../lib/gcc/arm-eabi/6.2.0/../../../../arm-eabi/lib/thumb/fpu/cortex_m4\libc_nano.a(lib_a-readr.o): In function `_read_r':
+q:\gnu\newlib-nano\build-2016q3\arm-eabi\thumb\fpu\cortex_m4\newlib\libc\reent\..\..\..\..\..\..\..\..\newlib-nano-2016q3\newlib\libc\reent\readr.c(58): error : undefined reference to `_read'
+collect2.exe : error : ld returned 1 exit status
