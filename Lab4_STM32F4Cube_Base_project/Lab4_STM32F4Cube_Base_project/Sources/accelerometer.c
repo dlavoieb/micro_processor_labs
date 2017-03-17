@@ -12,6 +12,7 @@
 uint8_t accelerometer_flag = 0;
 struct AccelerometerAngles angle_buffer[5];
 uint8_t buffer_position = 0;
+extern osThreadId DisplayThreadID;
 
 void accelerometer_init(void)
 {
@@ -49,10 +50,9 @@ void EXTI0_IRQHandler(void)
 		// Update the position of the next entry;
 	buffer_position = (buffer_position + 1) % 5;
 
-	// Set the accelerometer flag high.
-	accelerometer_flag = 1;
-	
 	disable_accelerometer_interrupt();
+	
+	osSignalSet(DisplayThreadID, 0x0001);
 }
 
 

@@ -30,6 +30,7 @@
 #include "LIS3DSH.h"
 #include "stm32f4xx_hal.h"
 #include "math.h"
+#include "display.h"
 
 
 /**
