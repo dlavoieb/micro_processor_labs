@@ -15,35 +15,46 @@ osThreadDef(temp_acquisition_thread, osPriorityNormal, 1, 0);
 
 void ConfigureADC()
 {
-	ADC_ChannelConfTypeDef adcChannel;
-
-	__GPIOC_CLK_ENABLE();
-	__ADC1_CLK_ENABLE();
-
-	HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
-	HAL_NVIC_EnableIRQ(ADC_IRQn);
-
-	g_AdcHandle.Instance = ADC1;
-
-	g_AdcHandle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV8;		// 168 MHz divided by 8 = 21 MHz
-	g_AdcHandle.Init.Resolution = ADC_RESOLUTION_12B;					// 12 bits, so 15 cycles, so 1.4 MHz processing
-	g_AdcHandle.Init.ScanConvMode = DISABLE;
-	g_AdcHandle.Init.ContinuousConvMode = ENABLE;						//Enable continuous conversion 
-	g_AdcHandle.Init.DiscontinuousConvMode = DISABLE;
-	g_AdcHandle.Init.NbrOfDiscConversion = 1;
-	g_AdcHandle.Init.ExternalTrigConvEdge = ADC_SOFTWARE_START;
-	g_AdcHandle.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-	g_AdcHandle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-	g_AdcHandle.Init.NbrOfConversion = 1;
-	g_AdcHandle.Init.DMAContinuousRequests = ENABLE;					// Enable DMA requests to use DMA
-	g_AdcHandle.Init.EOCSelection = DISABLE;
-
-	HAL_ADC_Init(&g_AdcHandle);
+	ADC_ChannelConfTypeDef g_AdcChannel;									// definition of ADC1 channel struct
+	ADC_MultiModeTypeDef g_AdcMode; 										// define ADC1 mode struct
 	
-	adcChannel.Channel = ADC_CHANNEL_TEMPSENSOR;
-	adcChannel.Rank = 1;
-	adcChannel.SamplingTime = ADC_SAMPLETIME_28CYCLES;
-	adcChannel.Offset = 0;
+	/*  initialize ADC init struct */
+	g_AdcHandle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;					// ADC Clock frequency 42MHz (168/4)
+	g_AdcHandle.Init.Resolution = ADC_RESOLUTION_12B;							// 12 bit resolution, better but slower
+	g_AdcHandle.Init.DataAlign = ADC_DATAALIGN_RIGHT;							// align the 12 bits data at the right of the 32 bits words
+	g_AdcHandle.Init.ScanConvMode = DISABLE;									// single channel mode
+	g_AdcHandle.Init.EOCSelection = ADC_EOC_SEQ_CONV;							// perform ADC conversions without having to read all conversion data
+	g_AdcHandle.Init.ContinuousConvMode = DISABLE;								// single mode convertion
+	g_AdcHandle.Init.DMAContinuousRequests = DISABLE;							// single mode DMA request
+	g_AdcHandle.Init.NbrOfConversion = 1;										// one conversion
+	g_AdcHandle.Init.DiscontinuousConvMode = ENABLE;							// enable discountinuous mode
+	g_AdcHandle.Init.NbrOfDiscConversion = 1;									// one conversion
+	g_AdcHandle.Init.ExternalTrigConv = ADC_SOFTWARE_START;						// no external trigger
+	g_AdcHandle.Init.ExternalTrigConvEdge = ADC_SOFTWARE_START;					// no external trigger
+	
+	/* initialize ADC handle struct */
+	g_AdcHandle.Instance = ADC1;
+	g_AdcHandle.NbrOfCurrentConversionRank = 1;
+	g_AdcHandle.State = 0;
+	g_AdcHandle.ErrorCode = HAL_ADC_ERROR_NONE;
+	
+	/* initialize ADC channel struct */
+	g_AdcChannel.Channel = ADC_CHANNEL_TEMPSENSOR;
+	g_AdcChannel.Rank = 1;												// use to determine the rank in which this channel is sampled
+	g_AdcChannel.SamplingTime = ADC_SAMPLETIME_480CYCLES;				// time for the internal capacitor to charge. longuer means more accurate
+	g_AdcChannel.Offset = 0;
+	
+	/* initialize ADC mode struct */
+	g_AdcMode.Mode = ADC_MODE_INDEPENDENT;														
+	g_AdcMode.DMAAccessMode = ADC_DMAACCESSMODE_DISABLED;
+	g_AdcMode.TwoSamplingDelay = ADC_TWOSAMPLINGDELAY_5CYCLES;
+	
+	__HAL_RCC_ADC1_CLK_ENABLE();
+	HAL_ADC_ConfigChannel(&g_AdcHandle, &g_AdcChannel);
+	HAL_ADCEx_MultiModeConfigChannel(&g_AdcHandle, &g_AdcMode);	/* configure mode */
+
+	//GPIO_InitTypeDef GPIO_InitDef; 								
+	__HAL_RCC_GPIOA_CLK_ENABLE(); 
 }
 
 int start_temp_thread(void){
