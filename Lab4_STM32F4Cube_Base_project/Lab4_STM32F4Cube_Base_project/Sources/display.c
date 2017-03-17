@@ -5,6 +5,7 @@
 
 extern uint8_t accelerometer_flag;
 extern struct AccelerometerAngles angle_buffer[];
+extern osMutexId temperature_global_mutex_id;
 struct AccelerometerAngles angles;
 float to_display;
 
@@ -35,9 +36,19 @@ void thread_display(void const * argument){
 	
 	while (1){
 		/*
-		 * 
+		 * Temp Reading
 		 */
 		
+		
+		
+		/*
+		 * Keypad
+		 */
+		
+		
+		/*
+		 * Accelerometer
+		 */
 		// Get values for accelerometer and filter them if necessary.
 		accelerometer_event = osSignalWait(0x0001, 0);
 		if (accelerometer_event.status == osEventSignal)

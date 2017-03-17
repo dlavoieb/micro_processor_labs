@@ -13,11 +13,14 @@
 #include "RTE_Components.h"             // Component selection
 #include "accelerometer.h"
 #include "display.h"
+#include "adc.h"
 
 extern void initializeLED_IO			(void);
 extern void start_Thread_LED			(void);
 extern void Thread_LED(void const *argument);
 extern osThreadId tid_Thread_LED;
+osMutexDef(temperature_global_mutex);
+osMutexId(temperature_global_mutex_id);
 
 /**
 	These lines are mandatory to make CMSIS-RTOS RTX work with te new Cube HAL
@@ -79,8 +82,13 @@ int main (void) {
 	
 	/* User codes goes here*/
   accelerometer_init();
+	ConfigureADC();
 	gpio_led_init();
 	init_pwm_led();
+	
+	temperature_global_mutex_id = osMutexCreate(osMutex(temperature_global_mutex));
+	
+	start_temp_thread();
   start_display_thread();
 	/* User codes ends here*/
   
