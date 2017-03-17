@@ -50,4 +50,3 @@ void stop_abort_timer(void)
 {
 	HAL_TIM_Base_Stop_IT(&TIM_Handle2);
 }
-	

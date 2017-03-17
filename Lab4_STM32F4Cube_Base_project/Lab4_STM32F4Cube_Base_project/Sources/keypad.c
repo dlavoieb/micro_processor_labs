@@ -35,7 +35,7 @@ uint16_t read_char;
 uint16_t prev_read_char;
 char c;
 // Private Functions
-char internal_read_char();
+char internal_read_char(void);
 
 // Implementation of public functions
 void keypad_init(void) 

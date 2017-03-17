@@ -20,7 +20,7 @@ extern const float THRESHOLD_FAHRENHEIT;
 
 extern struct AppState appState;
 
-DigitNumber digit;
+DigitNumber digit_pin;
 
 osThreadId DisplayThreadID;
 osThreadDef(thread_display, osPriorityNormal, 1, 0);
@@ -47,8 +47,7 @@ void thread_display(void const * argument){
 	float temperature;
 	float local_adc_value;
 	osStatus temperature_mutex_status;
-	osStatus app_state_mutex_status;
-	DigitNumber digit = DIGIT_1;
+	DigitNumber digit_pin = DIGIT_1;
 	
 	uint8_t hazard = 0;
 	uint8_t hazard_counter = 0;
@@ -84,7 +83,7 @@ void thread_display(void const * argument){
 		if (hazard == 1 && hazard_counter > HAZARD_COUNTER_LIMIT / 2)
 		{
 			// Disable display - This is what makes the display `flash`.
-			display_temperature(-1, 'r', digit);
+			display_temperature(-1, 'r', digit_pin);
 		}
 		else
 		{
@@ -103,19 +102,19 @@ void thread_display(void const * argument){
 				case TEMPERATURE:
 					// Display the temperature based on the current units.
 				  temperature = to_unit_from_ADC_RAW(local_adc_value, appState.temp_unit);
-					display_temperature(temperature, appState.temp_unit, digit);
+					display_temperature(temperature, appState.temp_unit, digit_pin);
 				  break;
 				case ANGLE:
 					switch(appState.pitch_or_roll)
 					{
 						case SHOW_PITCH:
-							display_angle(appState.temp_pitch, 'P', digit);
+							display_angle(appState.temp_pitch, 'P', digit_pin);
 							break;
 						case SHOW_ROLL:
-							display_angle(appState.temp_roll, 'R', digit);
+							display_angle(appState.temp_roll, 'R', digit_pin);
 							break;
 						default:
-							display_angle(-1, '-', digit);
+							display_angle(-1, '-', digit_pin);
 							break;
 					}
 					break;
@@ -127,7 +126,7 @@ void thread_display(void const * argument){
 			osMutexRelease(app_state_mutex_id);
 		}
 		
-		digit = (digit + 1) % 4;
+		digit_pin = (digit_pin + 1) % 4;
 		hazard_counter = (hazard_counter + 1) % HAZARD_COUNTER_LIMIT;
 
 
@@ -185,8 +184,10 @@ void display_temperature(float temperature, DisplayUnits units, DigitNumber  dig
 	if (temperature < 0)
 	{
 		display_caracter = '#';
-		digit = -1;
-	}
+		led_char(display_caracter, dot);
+		return;
+  }
+	
 	if (temperature < 100)
 	{
 		switch (digit)
@@ -493,28 +494,30 @@ void display_angle(int16_t angle, char suffix, DigitNumber digit)
 	if (angle < 0)
 	{
 		display_caracter = '-';
-		digit = -1;
 	}
-	switch (digit)
+	else
 	{
-	case DIGIT_1:
-		// first symbol:
-		display_caracter = '0' + (((uint32_t) angle) / 100);
-		break;
-	case DIGIT_2:
-		//second symbol:
-		display_caracter = '0' + ((((uint32_t) angle) / 10) % 10);
-		break;
-	case DIGIT_3:
-		//thrird sybmol:
-		display_caracter = '0' + (((uint32_t)(angle)) % 10);
-		break;
-	case DIGIT_4:
-		//unit symbol
-		display_caracter = suffix;
-		break;
-	default:
-		break;		
+		switch (digit)
+		{
+		case DIGIT_1:
+			// first symbol:
+			display_caracter = '0' + (((uint32_t) angle) / 100);
+			break;
+		case DIGIT_2:
+			//second symbol:
+			display_caracter = '0' + ((((uint32_t) angle) / 10) % 10);
+			break;
+		case DIGIT_3:
+			//thrird sybmol:
+			display_caracter = '0' + (((uint32_t)(angle)) % 10);
+			break;
+		case DIGIT_4:
+			//unit symbol
+			display_caracter = suffix;
+			break;
+		default:
+			break;		
+		}
 	}
 	
 	led_char(display_caracter, 0);

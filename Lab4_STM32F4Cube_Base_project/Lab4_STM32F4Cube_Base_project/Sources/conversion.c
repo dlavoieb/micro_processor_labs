@@ -23,10 +23,12 @@ int temp_alarm(float temp, DisplayUnits units)
 
 float to_unit_from_ADC_RAW(float adc_val, DisplayUnits units)
 {
+	float result;
 	switch(units){
 		case CELCIUS_UNITS:
-			return celcius_from_ADC_RAW(adc_val);
+			result = celcius_from_ADC_RAW(adc_val);
 		case FARENHEIT_UNITS:
-			return fahrenheit_from_ADC_RAW(adc_val);
+			result = fahrenheit_from_ADC_RAW(adc_val);
 	}
+	return result;
 }
