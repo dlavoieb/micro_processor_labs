@@ -17,7 +17,9 @@ int start_display_thread(void)
 }
 
 void thread_display(void const * argument){
+	enable_accelerometer_interrupt();
 	while (1){
 		int x = 1;
+		
 	}
 }

@@ -8,13 +8,10 @@
 
 #include "accelerometer.h"
 
-#define ACC_DATA_BUFFER_LEN 5
 
 uint8_t accelerometer_flag = 0;
-struct RawAccelerometerData raw_accelerometer_data_buffer[ACC_BUFFER_LEN];
+struct AccelerometerAngles angle_buffer[5];
 uint8_t buffer_position = 0;
-float accelerometer_data_buffer[ACC_BUFFER_LEN];
-
 
 void accelerometer_init(void)
 {
@@ -35,22 +32,27 @@ void accelerometer_init(void)
 
 void EXTI0_IRQHandler(void)
 {
+	float accelerometer_data_buffer[ACC_BUFFER_LEN];
+
 	// Clear the interrupt pin.
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
-
+	
 	// Read out the values from the accelerometer.
 	LIS3DSH_ReadACC(&accelerometer_data_buffer[0]);
 	
-	// Place the aquired data in global buffer.
-	raw_accelerometer_data_buffer[buffer_position].x = accelerometer_data_buffer[0];
-	raw_accelerometer_data_buffer[buffer_position].y = accelerometer_data_buffer[1];
-	raw_accelerometer_data_buffer[buffer_position].z = accelerometer_data_buffer[2];
+	// Transform based on calibration data.
+	adjust_accelerometer_angle(&accelerometer_data_buffer[0]);
 	
-	// Update the position of the next entry;
+	// Calculate the tilt and roll angles of the accelerometer.
+	accelerometer_angle_calculation(&accelerometer_data_buffer[0], &angle_buffer[buffer_position]);
+
+		// Update the position of the next entry;
 	buffer_position = (buffer_position + 1) % 5;
 
 	// Set the accelerometer flag high.
 	accelerometer_flag = 1;
+	
+	disable_accelerometer_interrupt();
 }
 
 
@@ -103,11 +105,13 @@ void interrupt_GPIO_config(void)
 {
 	GPIO_InitTypeDef GPIO_InitStruct;
 	
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+
 	// Explicitly reset port A0 (push button port) to avoid conflicts.
 	HAL_GPIO_DeInit(GPIOA, GPIO_PIN_0);
 	
 	// Setup GPIO port E0 for accelerometer interrupts.
-	GPIO_InitStruct.Pin = GPIO_PIN_0;
+GPIO_InitStruct.Pin = GPIO_PIN_0;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
 	GPIO_InitStruct.Pull = GPIO_PULLDOWN;
@@ -116,23 +120,36 @@ void interrupt_GPIO_config(void)
 }
 
 
-void accelerometer_angle_calculation(struct RawAccelerometerData * data, struct AccelerometerAngles * result)
+void enable_accelerometer_interrupt(void)
 {
-	float temp;
-	float roll_denom_squared;
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
+	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+}
+
+void disable_accelerometer_interrupt(void)
+{
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
+	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
+}
+
+
+
+void accelerometer_angle_calculation(float * xyz_data, struct AccelerometerAngles * result)
+{
+	// For readability. For clarity. For honor.
+	float x_acc = xyz_data[0];
+	float y_acc = xyz_data[1];
+	float z_acc = xyz_data[2];
+		float temp ;
+	float roll_denom_squared ;
 	float roll_denominator;
-	
-	float x_acc = data->x;
-	float y_acc = data->y;
-	float z_acc = data->z;
-	
 	
 	// Calculate the denominator for pitch: Ay^2 + Az^2.
 	float pitch_denom_squared = y_acc * y_acc + z_acc * z_acc;
 	
 	// Get the square root of the denominator using a cmsis lib call.
 	float pitch_denominator;
-	arm_sqrt_f32(pitch_denom_squared, &pitch_denominator);
+	pitch_denominator = sqrt(pitch_denom_squared);
 	
 	// Calculate the pitch using arctan.
 	temp = atan2(x_acc, pitch_denominator);
@@ -140,22 +157,23 @@ void accelerometer_angle_calculation(struct RawAccelerometerData * data, struct 
 	
 	
 	// Calculate the denominator for pitch: Ax^2 + Az^2.
-	roll_denom_squared = x_acc * x_acc + z_acc * z_acc;
+	 roll_denom_squared = x_acc * x_acc + z_acc * z_acc;
 	
 	// Get the square root of the denominator using a cmsis lib call.
-	arm_sqrt_f32(roll_denom_squared, &roll_denominator);
+	
+	roll_denominator = sqrt(roll_denom_squared);
 	
 	// Calculate the roll using arctan.
 	result->roll = atan2f(y_acc, roll_denominator);
 }
 
 
-void adjust_accelerometer_angle(struct RawAccelerometerData * data)
+void adjust_accelerometer_angle(float * xyz_data)
 {
 	// Raw data.
-	float Ax = data->x;
-	float Ay = data->y;
-	float Az = data->z;
+	float Ax = xyz_data[0];
+	float Ay = xyz_data[1];
+	float Az = xyz_data[2];
 	
 	/* 
 	 * Note: The following equations can be found in AN3182
@@ -168,48 +186,7 @@ void adjust_accelerometer_angle(struct RawAccelerometerData * data)
 	float Az1 = ACC_CALIB_31 * Ax + ACC_CALIB_32 * Ay + ACC_CALIB_33 * Az + ACC_CALIB_30;
 	
 	// Replace the raw data with the normalized values.
-	data->x = Ax1;
-	data->y = Ay1;
-	data->z = Az1;
-}
-
-
-void resolve_angle(struct AccelerometerAngles * angles)
-{
-	float raw_x = 0;
-	float raw_y = 0;
-	float raw_z = 0;
-	uint8_t i;
-	
-	struct RawAccelerometerData data;
-	
-	// Accumulate what is in the buffer.
-	for (i = 0; i < ACC_DATA_BUFFER_LEN ; i++)
-	{
-		raw_x += raw_accelerometer_data_buffer[i].x;
-		raw_y += raw_accelerometer_data_buffer[i].y;
-		raw_z += raw_accelerometer_data_buffer[i].z;
-	}
-	
-	// Place the averages in the appropriate data structure.
-	data.x = raw_x / ACC_DATA_BUFFER_LEN;
-	data.y = raw_y / ACC_DATA_BUFFER_LEN;
-	data.z = raw_z / ACC_DATA_BUFFER_LEN;
-	
-	adjust_accelerometer_angle(&data);
-	
-	accelerometer_angle_calculation(&data, angles);
-}
-
-
-void enable_accelerometer_interrupt(void)
-{
-	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
-	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-}
-
-
-void disable_accelerometer_interrupt(void)
-{
-	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
+	xyz_data[0] = Ax1;
+	xyz_data[1] = Ay1;
+	xyz_data[2] = Az1;
 }

@@ -26,11 +26,9 @@
 #define ACC_CALIB_20 -0.0053
 #define ACC_CALIB_30 -0.0249
 
-#define ARM_MATH_CM4
+
 #include "LIS3DSH.h"
-#include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 #include "stm32f4xx_hal.h"
-#include "arm_math.h"
 #include "math.h"
 
 
@@ -42,18 +40,6 @@ struct AccelerometerAngles
 	float pitch;
 	float roll;
 };
-
-
-/**
- * Data structure for raw accelerometer data.
- */
-struct RawAccelerometerData
-{
-	float x;
-	float y;
-	float z;
-};
-
 
 /**
  * @author	Malcolm Watt
@@ -75,7 +61,7 @@ void EXTI0_IRQHandler(void);
  * @author	Malcolm Watt
  * @brief	Calculate the accelerometer angles.
  */
-void accelerometer_angle_calculation(struct RawAccelerometerData * data, struct AccelerometerAngles * result);
+void accelerometer_angle_calculation(float * xyz_data, struct AccelerometerAngles * result);
 
 
 /**
@@ -83,7 +69,7 @@ void accelerometer_angle_calculation(struct RawAccelerometerData * data, struct 
  * @brief	Adjust the accelerometer angles based on the calibration data.
  * @description	Transforms the input Ax, Ay, Az into the normalized and corrected Ax1, Ay1 and Az1.
  */
-void adjust_accelerometer_angle(struct RawAccelerometerData * data);
+void adjust_accelerometer_angle(float * xyz_data);
 
 
 /**
@@ -113,17 +99,10 @@ void interrupt_GPIO_config(void);
 
 /**
  * @author	Malcolm Watt
- * @brief	Clear the interupt line and enable the IRQ.
+ * @brief	Clear the interupt line and enable the ISQ.
  */
 void enable_accelerometer_interrupt(void);
 
-
-/**
- * @author	Malcolm Watt
- * @brief	Disable IRQ. When we do not need the accelerometer we should disable the IRQ.
- */
 void disable_accelerometer_interrupt(void);
-
-void resolve_angle(struct AccelerometerAngles * angles);
 
 #endif // !ACCELEROMETER_H_
