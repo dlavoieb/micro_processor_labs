@@ -14,6 +14,9 @@
 #include "accelerometer.h"
 #include "display.h"
 #include "adc.h"
+#include "main.h"
+
+AppState appState; // main app state and data
 
 extern void initializeLED_IO			(void);
 extern void start_Thread_LED			(void);

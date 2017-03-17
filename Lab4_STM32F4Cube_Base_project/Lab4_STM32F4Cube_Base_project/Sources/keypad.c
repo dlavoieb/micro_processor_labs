@@ -1,5 +1,6 @@
 #include "keypad.h"
 #include "stm32f4xx_hal.h"
+#include "main.h"
 
 #define R1 GPIOB, GPIO_PIN_6
 #define R2 GPIOB, GPIO_PIN_7
@@ -11,7 +12,7 @@
 #define C4 GPIOC, GPIO_PIN_9
 
 uint8_t keypress_flag;
-
+extern AppState appState
 // Private Functions
 char internal_read_char();
 
@@ -55,21 +56,21 @@ void keypad_init(void)
 	GPIO_InitStruct.Mode		= GPIO_MODE_OUTPUT_PP;
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 	
-	GPIO_InitStruct.Mode		= GPIO_MODE_IT_RISING_FALLING;
+	GPIO_InitStruct.Mode		= GPIO_MODE_INPUT;
 	GPIO_InitStruct.Pin			= GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9;
 	GPIO_InitStruct.Speed 		= GPIO_SPEED_LOW;
 	GPIO_InitStruct.Pull 		= GPIO_PULLDOWN;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-	HAL_NVIC_SetPriority(EXTI9_5_IRQn, 1, 1);
+	// HAL_NVIC_SetPriority(EXTI9_5_IRQn, 1, 1);
 	
-	enable_keypad_interrupt();
+	// enable_keypad_interrupt();
 }
 
 int keypad_read_char(char * c)
 {
-	disable_keypad_interrupt();
+	// disable_keypad_interrupt();
 	(*c) = internal_read_char();
-	enable_keypad_interrupt();
+	// enable_keypad_interrupt();
 	return (*c) == 0 ? 1 : 0;
 }
 
@@ -159,4 +160,18 @@ char internal_read_char()
 		return 'd';
 	}
 	return 0;
+}
+
+
+void keypad_main_thread(void const * arguments)
+{
+	while(1) 
+	{
+		// read button
+		// if button pressed 
+		// change state and update temp vars
+		// if state done
+		// publish new variables
+
+	}
 }
