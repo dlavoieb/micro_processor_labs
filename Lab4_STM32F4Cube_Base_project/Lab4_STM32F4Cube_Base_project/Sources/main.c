@@ -80,6 +80,7 @@ int main (void) {
 	/* User codes goes here*/
   accelerometer_init();
 	gpio_led_init();
+	init_pwm_led();
   start_display_thread();
 	/* User codes ends here*/
   

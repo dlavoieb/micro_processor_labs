@@ -34,6 +34,10 @@ void thread_display(void const * argument){
 	enable_accelerometer_interrupt();
 	
 	while (1){
+		/*
+		 * 
+		 */
+		
 		// Get values for accelerometer and filter them if necessary.
 		accelerometer_event = osSignalWait(0x0001, 0);
 		if (accelerometer_event.status == osEventSignal)
