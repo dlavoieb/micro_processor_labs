@@ -1,3 +1,4 @@
+#include "main.h"
 #include "display.h"
 #include "adc.h"
 #include "conversion.h"
@@ -15,7 +16,9 @@ extern float g_AdcValue;
 extern float celcius_from_ADC_RAW(float);
 extern const float THRESHOLD_CELCIUS;
 extern const float THRESHOLD_FAHRENHEIT;
-#define ALARM_COUNTER 150
+#define HAZARD_COUNTER_LIMIT 150
+
+extern struct AppState appState;
 
 DigitNumber digit;
 
@@ -73,20 +76,43 @@ void thread_display(void const * argument){
 			hazard = 0;
 		}
 		
-
-			// Check is alarm is active
-			if (hazard_counter > ALARM_COUNTER/2)
-				// Normal display
-				display_temperature(123, 'r', digit);				
-			else
-				// Disable display
-				display_temperature(-1, 'r', digit);
+		/*
+		 * The main code for writing to the seven segment display.
+		 */
+		if (hazard == 1 && hazard_counter > HAZARD_COUNTER_LIMIT / 2)
+		{
+			// Disable display - This is what makes the display `flash`.
+			display_temperature(-1, 'r', digit);
+		}
+		else
+		{
+			/*
+			 * Normal display
+			 * Check which state we are in.
+			 * If we are in temperature mode, display the current temperature in the current units.
+			 * If we are in accelerometer mode, display the inputs for the keypad.
+			 */
 			
-			digit = (digit + 1) % 4;
-			hazard_counter = (hazard_counter + 1) % ALARM_COUNTER;
-		
-		
-		
+			// Request the app state mutex.
+			osMutexWait(app_state_mutex_id, osWaitForever);
+
+			switch(appState.display_state)
+			{
+				case TEMPERATURE:
+					break;
+				case ANGLE:
+					break;
+				default:
+					break;
+			}
+
+			// Release the app state mutex.
+			osMutexRelease(app_state_mutex_id);
+		}
+
+		hazard_counter = (hazard_counter + 1) % HAZARD_COUNTER_LIMIT;
+
+
 		/*
 		 * Get values for accelerometer and filter them if necessary.
 		 */
@@ -359,7 +385,7 @@ void led_char(char character, uint8_t dot) {
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_SET);                    // A	 _
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_SET);                    // B	|_|
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_SET);                     // C	 _|
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_SET);						// D
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_SET);											// D
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);                  // E
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);                    // F
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET);                    // G
@@ -367,7 +393,7 @@ void led_char(char character, uint8_t dot) {
 	    
 	case 'F':
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_SET);					// A	 _
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);					// B	|_
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);				// B	|_
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_RESET);					// C	|
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_RESET);					// D
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);					// E
@@ -377,12 +403,12 @@ void led_char(char character, uint8_t dot) {
 		
 	case 'C':
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_SET);					// A	 _
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);					// B	|
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);			  // B	|
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_RESET);					// C	|_
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_SET);						// D	
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);					// E
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);					// F
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_RESET);					// G
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_RESET);				// G
 		break;
     
 	case 'P':
@@ -396,12 +422,12 @@ void led_char(char character, uint8_t dot) {
 		break;
 
 	case 'R':
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_RESET);					// A	
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);					// B	 _
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_11, GPIO_PIN_RESET);				// A	
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_10, GPIO_PIN_RESET);				// B	 _
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_9, GPIO_PIN_RESET);					// C	|
 		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_RESET);					// D	
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET);					// E
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);					// F
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);				// F
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET);					// G
 		break;
 	    
