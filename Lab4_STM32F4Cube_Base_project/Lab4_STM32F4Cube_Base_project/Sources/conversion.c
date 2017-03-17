@@ -20,3 +20,13 @@ int temp_alarm(float temp, DisplayUnits units)
 	else
 		return temp > THRESHOLD_FAHRENHEIT;
 }
+
+float to_unit_from_ADC_RAW(float adc_val, DisplayUnits units)
+{
+	switch(units){
+		case CELCIUS_UNITS:
+			return celcius_from_ADC_RAW(adc_val);
+		case FARENHEIT_UNITS:
+			return fahrenheit_from_ADC_RAW(adc_val);
+	}
+}

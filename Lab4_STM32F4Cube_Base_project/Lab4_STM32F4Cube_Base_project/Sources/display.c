@@ -44,9 +44,11 @@ void thread_display(void const * argument){
 	int16_t roll_intensity = 0;
 	int16_t pitch_intensity = 0;
 	int i;
+	float temperature;
 	float local_adc_value;
 	osStatus temperature_mutex_status;
 	osStatus app_state_mutex_status;
+	DigitNumber digit = DIGIT_1;
 	
 	uint8_t hazard = 0;
 	uint8_t hazard_counter = 0;
@@ -99,7 +101,10 @@ void thread_display(void const * argument){
 			switch(appState.display_state)
 			{
 				case TEMPERATURE:
-					break;
+					// Display the temperature based on the current units.
+				  temperature = to_unit_from_ADC_RAW(local_adc_value, appState.temp_unit);
+					
+				  break;
 				case ANGLE:
 					break;
 				default:
