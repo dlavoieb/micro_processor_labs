@@ -1,6 +1,7 @@
 #include "keypad.h"
 #include "stm32f4xx_hal.h"
 #include "main.h"
+#include "timer.h"
 
 #define R1 GPIOB, GPIO_PIN_6
 #define R2 GPIOB, GPIO_PIN_7
@@ -11,41 +12,36 @@
 #define C3 GPIOC, GPIO_PIN_8
 #define C4 GPIOC, GPIO_PIN_9
 
-uint8_t keypress_flag;
-extern AppState appState
+extern AppState appState;
+extern volatile uint8_t timer2_flag;
+extern osMutexId app_state_mutex_id;
+
+osThreadId(KeypadThreadID);
+osThreadDef(keypad_main_thread, osPriorityNormal, 1, 0);
+
+enum KeypadState
+{
+	INIT,
+	DONE,
+	ROLL,
+	PITCH,
+	WAIT,
+	ABORT
+} kepyad_state;
+
+uint16_t temp_pitch;
+uint16_t temp_roll;
+uint16_t read_char;
+uint16_t prev_read_char;
+
 // Private Functions
 char internal_read_char();
-
-void enable_keypad_interrupt(void)
-{
-	// Drive outputs high
-	HAL_GPIO_WritePin(R1, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(R2, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(R3, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(R4, GPIO_PIN_SET);
-	
-	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9);
-	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);	
-}
-
-void disable_keypad_interrupt(void)
-{
-	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);	
-}
-
-// Interrupt handler
-void EXTI9_5_IRQHandler(void) {
-	// key pressed, ask for key read
-	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9);
-	keypress_flag = 1;
-}
 
 // Implementation of public functions
 void keypad_init(void) 
 {
 	GPIO_InitTypeDef GPIO_InitStruct;	
 
-	keypress_flag = 1;
 	// Activate the clocks
 	__HAL_RCC_GPIOC_CLK_ENABLE();
 	__HAL_RCC_GPIOB_CLK_ENABLE();
@@ -167,11 +163,112 @@ void keypad_main_thread(void const * arguments)
 {
 	while(1) 
 	{
+
+		if (timer2_flag == 1)
+		{
+			// abort procedure
+			KeypadState = ABORT;
+			timer2_flag = 0;
+		}
+
 		// read button
 		// if button pressed 
 		// change state and update temp vars
 		// if state done
 		// publish new variables
+		read_char = keypad_read_char(&c);
 
+		if (read_char != prev_read_char)
+		{
+			// key change
+			stop_abort_timer();		
+		}
+		prev_read_char = read_char;
+
+		osMutexWait(app_state_mutex_id, osWaitForever);					
+		switch (keypad_state)
+		{
+		case INIT:
+			// Store initial values
+			temp_pitch = 0;
+			temp_roll = 0;
+			appState.target_pitch = 0;
+			appState.target_roll = 0;
+			keypad_state = WAIT;
+			break;
+			
+		case DONE:
+			// apply new data to comparators
+			appState.target_pitch = temp_pitch < 90 ? temp_pitch : 90;
+			appState.target_roll = temp_roll < 90 ? temp_roll : 90;
+			temp_pitch = 0;
+			temp_roll = 0;
+			keypad_state = WAIT;
+			break;
+				
+		case WAIT:
+			appState.display_state = TEMPERATURE;
+			if (read_char == 1)	
+				break;
+			else 
+				keypad_state = ROLL;
+		case ROLL:
+			appState.display_state = ANGLE;		
+			if (read_char == 0 && prev_read_char == 1)
+			{
+				if ('0' <= c && c <= '9')
+				{
+					temp_roll = (temp_roll * 10) + (c - '0');
+				}
+				else if (c == '#')
+				{
+					keypad_state = PITCH;
+				}
+				else if (c == '*')
+				{
+					float temp = (temp_roll / 10.0);
+					temp_roll = (uint16_t) temp;
+					// start timer for clear, will timeout if nothing is entered in the next 3 seconds
+					start_abort_timer();
+				}
+			}
+			break;
+				
+		case PITCH:
+			if (read_char == 0 && prev_read_char == 1)
+			{
+					
+				if ('0' <= c && c <= '9')
+				{
+					temp_pitch = (temp_pitch * 10) + (c - '0');
+				}
+				else if (c == '#')
+				{
+					keypad_state = DONE;
+				}
+				else if (c == '*')
+				{
+					float temp = (temp_pitch / 10.0);
+					temp_pitch = (uint16_t) temp;
+					// start timer for clear, will timeout if nothing is entered in the next 3 seconds
+					start_abort_timer();
+				}
+			}
+			break;
+		case ABORT:
+			// clear temporary data
+			temp_pitch = 0;
+			temp_roll = 0;
+			keypad_state = WAIT;
+			break;
+		}
+		osMutexRelease(app_state_mutex_id);
+		osDelay(1);
 	}
+}
+
+int start_keypad_thread(void){
+	KeypadThreadID = osThreadCreate(osThread(keypad_main_thread), NULL);
+	if(!KeypadThreadID) return(-1);
+	return(0);
 }

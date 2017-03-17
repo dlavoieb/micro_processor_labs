@@ -36,6 +36,7 @@ void keypad_init(void);
  */
 int keypad_read_char(char * c);
 
+int start_keypad_thread(void);
 /**
   * @}
   */
