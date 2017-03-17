@@ -79,10 +79,8 @@ int main (void) {
 	
 	/* User codes goes here*/
   accelerometer_init();
-
-	initializeLED_IO();                       /* Initialize LED GPIO Buttons    */
-  start_Thread_LED();                       /* Create LED thread              */
-	start_display_thread();
+	gpio_led_init();
+  start_display_thread();
 	/* User codes ends here*/
   
 	osKernelStart();                          /* start thread execution         */
