@@ -1,5 +1,6 @@
 #include "display.h"
 #include "adc.h"
+#include "conversion.h"
 
 #define PI 3.14159265358979323846
 #define deg_to_rad 360.0 / (2 * PI)
@@ -41,6 +42,7 @@ void thread_display(void const * argument){
 	float local_adc_value;
 	osStatus temperature_mutex_status;
 	osStatus app_state_mutex_status;
+	
 	uint8_t hazard = 0;
 	uint8_t hazard_counter = 0;
 	

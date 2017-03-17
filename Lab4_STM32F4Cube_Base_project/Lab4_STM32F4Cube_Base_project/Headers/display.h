@@ -11,7 +11,6 @@
 #include "accelerometer.h"
 #include "led.h"
 #include "keypad.h"
-#include "conversion.h"
 
 
 /** @defgroup Seven_Segment_Display 

@@ -16,6 +16,8 @@ extern struct AppState appState;
 extern volatile uint8_t timer2_flag;
 extern osMutexId app_state_mutex_id;
 
+void keypad_main_thread(void const * arguments);
+
 osThreadId(KeypadThreadID);
 osThreadDef(keypad_main_thread, osPriorityNormal, 1, 0);
 
@@ -27,13 +29,13 @@ enum KeypadState
 	PITCH,
 	WAIT,
 	ABORT
-} kepyad_state;
+} keypad_state;
 
 uint16_t temp_pitch;
 uint16_t temp_roll;
 uint16_t read_char;
 uint16_t prev_read_char;
-
+char c;
 // Private Functions
 char internal_read_char();
 
@@ -167,7 +169,7 @@ void keypad_main_thread(void const * arguments)
 		if (timer2_flag == 1)
 		{
 			// abort procedure
-			KeypadState = ABORT;
+			keypad_state = ABORT;
 			timer2_flag = 0;
 		}
 
@@ -183,8 +185,7 @@ void keypad_main_thread(void const * arguments)
 			// key change
 			stop_abort_timer();		
 		}
-		prev_read_char = read_char;
-
+		
 		osMutexWait(app_state_mutex_id, osWaitForever);					
 		switch (keypad_state)
 		{
@@ -208,10 +209,10 @@ void keypad_main_thread(void const * arguments)
 				
 		case WAIT:
 			appState.display_state = TEMPERATURE;
-			if (read_char == 1)	
-				break;
-			else 
+			if (read_char == 1 && prev_read_char == 0)	
 				keypad_state = ROLL;
+			else 
+				break;
 		case ROLL:
 			appState.display_state = ANGLE;		
 			if (read_char == 0 && prev_read_char == 1)
@@ -263,6 +264,7 @@ void keypad_main_thread(void const * arguments)
 			break;
 		}
 		osMutexRelease(app_state_mutex_id);
+		prev_read_char = read_char;
 		osDelay(1);
 	}
 }

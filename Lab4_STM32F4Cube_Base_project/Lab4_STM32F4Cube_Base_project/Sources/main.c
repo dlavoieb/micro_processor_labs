@@ -91,13 +91,14 @@ int main (void) {
 	ConfigureADC();
 	gpio_led_init();
 	init_pwm_led();
+	keypad_init();
 	
 	temperature_global_mutex_id = osMutexCreate(osMutex(temperature_global_mutex));
 	app_state_mutex_id = osMutexCreate(osMutex(app_state_mutex));
 	
 	start_temp_thread();
   start_display_thread();
-  start_keypad_thread();
+  start_keypad_thread2();
 	/* User codes ends here*/
   
 	osKernelStart();                          /* start thread execution         */
