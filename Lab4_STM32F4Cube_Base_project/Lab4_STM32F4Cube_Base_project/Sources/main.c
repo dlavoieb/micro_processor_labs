@@ -11,6 +11,8 @@
 #include "stm32f4xx_hal.h"              // Keil::Device:STM32Cube HAL:Common
 #include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 #include "RTE_Components.h"             // Component selection
+#include "accelerometer.h"
+#include "display.h"
 
 extern void initializeLED_IO			(void);
 extern void start_Thread_LED			(void);
@@ -74,10 +76,13 @@ int main (void) {
   HAL_Init();                               /* Initialize the HAL Library     */
 
   SystemClock_Config();                     /* Configure the System Clock     */
-
+	
 	/* User codes goes here*/
-  initializeLED_IO();                       /* Initialize LED GPIO Buttons    */
+  accelerometer_init();
+
+	initializeLED_IO();                       /* Initialize LED GPIO Buttons    */
   start_Thread_LED();                       /* Create LED thread              */
+	start_display_thread();
 	/* User codes ends here*/
   
 	osKernelStart();                          /* start thread execution         */
