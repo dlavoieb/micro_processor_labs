@@ -7,9 +7,14 @@
 extern uint8_t accelerometer_flag;
 extern struct AccelerometerAngles angle_buffer[];
 extern osMutexId temperature_global_mutex_id;
+extern osMutexId app_state_mutex_id;
 struct AccelerometerAngles angles;
 float to_display;
 extern float g_AdcValue;
+extern float celcius_from_ADC_RAW(float);
+extern const float THRESHOLD_CELCIUS;
+extern const float THRESHOLD_FAHRENHEIT;
+
 
 osThreadId DisplayThreadID;
 osThreadDef(thread_display, osPriorityNormal, 1, 0);
@@ -35,23 +40,36 @@ void thread_display(void const * argument){
 	int i;
 	float local_adc_value;
 	osStatus temperature_mutex_status;
+	osStatus app_state_mutex_status;
+	uint8_t hazard = 0;
+	uint8_t hazard_counter = 0;
 	
 	enable_accelerometer_interrupt();
 	
 	while (1){
 		/*
-		 * Temperature Reading
+		 * Get the temperature based on what the temperature thread currently has set as the global.
 		 */
 		temperature_mutex_status = osMutexWait(temperature_global_mutex_id, 1);
 		if (temperature_mutex_status == osOK)
 		{
 			local_adc_value = g_AdcValue;
 			osMutexRelease(temperature_global_mutex_id);
-		}		
+		}
 		
 		/*
-		 * Keypad code placeholder.
+		 * Check for hazard.
 		 */
+		if (celcius_from_ADC_RAW(local_adc_value) > THRESHOLD_CELCIUS)
+		{
+			hazard = 1;
+		}
+		else
+		{
+			hazard = 0;
+		}
+		
+		
 		
 		/*
 		 * Get values for accelerometer and filter them if necessary.

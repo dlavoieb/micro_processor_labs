@@ -12,7 +12,7 @@
 #define C4 GPIOC, GPIO_PIN_9
 
 uint8_t keypress_flag;
-extern AppState appState
+struct AppState appState;
 // Private Functions
 char internal_read_char();
 

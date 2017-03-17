@@ -16,7 +16,7 @@
 #include "adc.h"
 #include "main.h"
 
-AppState appState; // main app state and data
+struct AppState appState; // main app state and data
 
 extern void initializeLED_IO			(void);
 extern void start_Thread_LED			(void);
@@ -24,6 +24,8 @@ extern void Thread_LED(void const *argument);
 extern osThreadId tid_Thread_LED;
 osMutexDef(temperature_global_mutex);
 osMutexId(temperature_global_mutex_id);
+osMutexDef(app_state_mutex);
+osMutexId(app_state_mutex_id);
 
 /**
 	These lines are mandatory to make CMSIS-RTOS RTX work with te new Cube HAL
@@ -90,6 +92,7 @@ int main (void) {
 	init_pwm_led();
 	
 	temperature_global_mutex_id = osMutexCreate(osMutex(temperature_global_mutex));
+	app_state_mutex_id = osMutexCreate(osMutex(app_state_mutex));
 	
 	start_temp_thread();
   start_display_thread();
