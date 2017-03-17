@@ -15,7 +15,9 @@ extern float g_AdcValue;
 extern float celcius_from_ADC_RAW(float);
 extern const float THRESHOLD_CELCIUS;
 extern const float THRESHOLD_FAHRENHEIT;
+#define ALARM_COUNTER 150
 
+DigitNumber digit;
 
 osThreadId DisplayThreadID;
 osThreadDef(thread_display, osPriorityNormal, 1, 0);
@@ -71,6 +73,18 @@ void thread_display(void const * argument){
 			hazard = 0;
 		}
 		
+
+			// Check is alarm is active
+			if (hazard_counter > ALARM_COUNTER/2)
+				// Normal display
+				display_temperature(123, 'r', digit);				
+			else
+				// Disable display
+				display_temperature(-1, 'r', digit);
+			
+			digit = (digit + 1) % 4;
+			hazard_counter = (hazard_counter + 1) % ALARM_COUNTER;
+		
 		
 		
 		/*
@@ -111,7 +125,7 @@ void thread_display(void const * argument){
 		set_duty_cycle_percent(roll_intensity, LED_BLUE);
 		set_duty_cycle_percent(roll_intensity, LED_ORANGE);
 		
-		osDelay(40);
+		osDelay(5);
 	}
 }
 

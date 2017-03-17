@@ -209,7 +209,7 @@ void keypad_main_thread(void const * arguments)
 				
 		case WAIT:
 			appState.display_state = TEMPERATURE;
-			if (read_char == 1 && prev_read_char == 0)	
+			if (read_char == 0 && prev_read_char == 1)	
 				keypad_state = ROLL;
 			else 
 				break;
