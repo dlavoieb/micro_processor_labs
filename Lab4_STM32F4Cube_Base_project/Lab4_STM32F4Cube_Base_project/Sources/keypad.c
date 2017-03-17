@@ -31,8 +31,6 @@ enum KeypadState
 	ABORT
 } keypad_state;
 
-uint16_t temp_pitch;
-uint16_t temp_roll;
 uint16_t read_char;
 uint16_t prev_read_char;
 char c;
@@ -191,8 +189,8 @@ void keypad_main_thread(void const * arguments)
 		{
 		case INIT:
 			// Store initial values
-			temp_pitch = 0;
-			temp_roll = 0;
+			appState.temp_pitch = 0;
+			appState.temp_roll = 0;
 			appState.target_pitch = 0;
 			appState.target_roll = 0;
 			keypad_state = WAIT;
@@ -200,10 +198,10 @@ void keypad_main_thread(void const * arguments)
 			
 		case DONE:
 			// apply new data to comparators
-			appState.target_pitch = temp_pitch < 90 ? temp_pitch : 90;
-			appState.target_roll = temp_roll < 90 ? temp_roll : 90;
-			temp_pitch = 0;
-			temp_roll = 0;
+			appState.target_pitch = appState.temp_pitch < 90 ? appState.temp_pitch : 90;
+			appState.target_roll = appState.temp_roll < 90 ? appState.temp_roll : 90;
+			appState.temp_pitch = 0;
+			appState.temp_roll = 0;
 			keypad_state = WAIT;
 			break;
 				
@@ -214,12 +212,13 @@ void keypad_main_thread(void const * arguments)
 			else 
 				break;
 		case ROLL:
-			appState.display_state = ANGLE;		
+			appState.display_state = ANGLE;
+		  appState.pitch_or_roll = SHOW_ROLL;
 			if (read_char == 0 && prev_read_char == 1)
 			{
 				if ('0' <= c && c <= '9')
 				{
-					temp_roll = (temp_roll * 10) + (c - '0');
+					appState.temp_roll = (appState.temp_roll * 10) + (c - '0');
 				}
 				else if (c == '#')
 				{
@@ -227,8 +226,8 @@ void keypad_main_thread(void const * arguments)
 				}
 				else if (c == '*')
 				{
-					float temp = (temp_roll / 10.0);
-					temp_roll = (uint16_t) temp;
+					float temp = (appState.temp_roll / 10.0);
+					appState.temp_roll = (uint16_t) temp;
 					// start timer for clear, will timeout if nothing is entered in the next 3 seconds
 					start_abort_timer();
 				}
@@ -236,12 +235,13 @@ void keypad_main_thread(void const * arguments)
 			break;
 				
 		case PITCH:
+			appState.pitch_or_roll = SHOW_PITCH;
 			if (read_char == 0 && prev_read_char == 1)
 			{
 					
 				if ('0' <= c && c <= '9')
 				{
-					temp_pitch = (temp_pitch * 10) + (c - '0');
+					appState.temp_pitch = (appState.temp_pitch * 10) + (c - '0');
 				}
 				else if (c == '#')
 				{
@@ -249,8 +249,8 @@ void keypad_main_thread(void const * arguments)
 				}
 				else if (c == '*')
 				{
-					float temp = (temp_pitch / 10.0);
-					temp_pitch = (uint16_t) temp;
+					float temp = (appState.temp_pitch / 10.0);
+					appState.temp_pitch = (uint16_t) temp;
 					// start timer for clear, will timeout if nothing is entered in the next 3 seconds
 					start_abort_timer();
 				}
@@ -258,8 +258,8 @@ void keypad_main_thread(void const * arguments)
 			break;
 		case ABORT:
 			// clear temporary data
-			temp_pitch = 0;
-			temp_roll = 0;
+			appState.temp_pitch = 0;
+			appState.temp_roll = 0;
 			keypad_state = WAIT;
 			break;
 		}

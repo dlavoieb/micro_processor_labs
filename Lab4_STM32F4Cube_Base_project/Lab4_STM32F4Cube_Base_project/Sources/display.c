@@ -103,9 +103,21 @@ void thread_display(void const * argument){
 				case TEMPERATURE:
 					// Display the temperature based on the current units.
 				  temperature = to_unit_from_ADC_RAW(local_adc_value, appState.temp_unit);
-					
+					display_temperature(temperature, appState.temp_unit, digit);
 				  break;
 				case ANGLE:
+					switch(appState.pitch_or_roll)
+					{
+						case SHOW_PITCH:
+							display_angle(appState.temp_pitch, 'P', digit);
+							break;
+						case SHOW_ROLL:
+							display_angle(appState.temp_roll, 'R', digit);
+							break;
+						default:
+							display_angle(-1, '-', digit);
+							break;
+					}
 					break;
 				default:
 					break;
@@ -114,7 +126,8 @@ void thread_display(void const * argument){
 			// Release the app state mutex.
 			osMutexRelease(app_state_mutex_id);
 		}
-
+		
+		digit = (digit + 1) % 4;
 		hazard_counter = (hazard_counter + 1) % HAZARD_COUNTER_LIMIT;
 
 

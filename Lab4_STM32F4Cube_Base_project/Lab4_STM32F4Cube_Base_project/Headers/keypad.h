@@ -19,6 +19,12 @@
  *
  */
 
+typedef enum
+{
+	SHOW_PITCH = 0,
+	SHOW_ROLL
+}PitchOrRoll;
+
 /**
  * @brief Initialise GPIO related to the keypad
  */
