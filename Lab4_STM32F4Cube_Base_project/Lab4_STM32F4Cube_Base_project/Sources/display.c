@@ -1,4 +1,5 @@
 #include "display.h"
+#include "adc.h"
 
 #define PI 3.14159265358979323846
 #define deg_to_rad 360.0 / (2 * PI)
@@ -8,6 +9,7 @@ extern struct AccelerometerAngles angle_buffer[];
 extern osMutexId temperature_global_mutex_id;
 struct AccelerometerAngles angles;
 float to_display;
+extern float g_AdcValue;
 
 osThreadId DisplayThreadID;
 osThreadDef(thread_display, osPriorityNormal, 1, 0);
@@ -31,25 +33,29 @@ void thread_display(void const * argument){
 	int16_t roll_intensity = 0;
 	int16_t pitch_intensity = 0;
 	int i;
+	float local_adc_value;
+	osStatus temperature_mutex_status;
 	
 	enable_accelerometer_interrupt();
 	
 	while (1){
 		/*
-		 * Temp Reading
+		 * Temperature Reading
 		 */
-		
-		
+		temperature_mutex_status = osMutexWait(temperature_global_mutex_id, 1);
+		if (temperature_mutex_status == osOK)
+		{
+			local_adc_value = g_AdcValue;
+			osMutexRelease(temperature_global_mutex_id);
+		}		
 		
 		/*
-		 * Keypad
+		 * Keypad code placeholder.
 		 */
-		
 		
 		/*
-		 * Accelerometer
+		 * Get values for accelerometer and filter them if necessary.
 		 */
-		// Get values for accelerometer and filter them if necessary.
 		accelerometer_event = osSignalWait(0x0001, 0);
 		if (accelerometer_event.status == osEventSignal)
 		{
@@ -83,7 +89,9 @@ void thread_display(void const * argument){
 		set_duty_cycle_percent(pitch_intensity, LED_GREEN);
 		set_duty_cycle_percent(pitch_intensity, LED_RED);
 		set_duty_cycle_percent(roll_intensity, LED_BLUE);
-		set_duty_cycle_percent(roll_intensity, LED_ORANGE);		
+		set_duty_cycle_percent(roll_intensity, LED_ORANGE);
+		
+		osDelay(40);
 	}
 }
 
