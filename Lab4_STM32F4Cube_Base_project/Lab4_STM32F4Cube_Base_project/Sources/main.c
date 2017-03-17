@@ -15,6 +15,7 @@
 #include "display.h"
 #include "adc.h"
 #include "main.h"
+#include "keypad.h"
 
 struct AppState appState; // main app state and data
 
@@ -96,6 +97,7 @@ int main (void) {
 	
 	start_temp_thread();
   start_display_thread();
+  start_keypad_thread();
 	/* User codes ends here*/
   
 	osKernelStart();                          /* start thread execution         */

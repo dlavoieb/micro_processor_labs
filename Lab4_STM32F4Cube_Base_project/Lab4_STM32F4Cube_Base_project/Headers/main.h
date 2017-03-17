@@ -11,8 +11,8 @@ typedef enum
 struct AppState{
     DisplayMode_T display_state;
     DisplayUnits temp_unit;
-    float target_pitch;
-    float target_roll;
+    uint16_t target_pitch;
+    uint16_t target_roll;
 };
 
 
